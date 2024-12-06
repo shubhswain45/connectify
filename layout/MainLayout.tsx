@@ -1,3 +1,4 @@
+import LeftSidebar from "@/components/LeftSidebar";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 import { useEffect, useState, ReactNode } from "react";
@@ -25,8 +26,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
       <ResizablePanelGroup direction="horizontal" className="flex-1 flex h-full overflow-hidden p-2">
         {/* Left Sidebar */}
         <ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 10} maxSize={30}>
-          {/* <LeftSidebar /> */}
-          left side
+          <LeftSidebar />
         </ResizablePanel>
 
         <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />

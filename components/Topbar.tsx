@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const Topbar = () => {
   // Hardcoded value for admin access
-  const isAdmin = true;
+  const isAdmin = false;
 
   return (
     <div
