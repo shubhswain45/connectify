@@ -2,7 +2,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import MainLayout from "@/layout/MainLayout";
 import Topbar from "@/components/Topbar";
 import { Edit2 } from "lucide-react"; // Lucide React icon for edit
-import PlayButton from "@/components/PlayButton"; // Assuming PlayButton is a custom component
 import FeaturedSection from "@/components/FeaturedSection";
 import SectionGrid from "@/components/SectionGrid";
 
