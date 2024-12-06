@@ -1,4 +1,3 @@
-import PlayButton from "./PlayButton";
 
 const FeaturedSection = () => {
 
