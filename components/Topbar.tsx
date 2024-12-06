@@ -33,9 +33,12 @@ const Topbar = () => {
         </button>
 
         {/* User Button Placeholder */}
+
+        <Link href={`/shubh`}>
         <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
           U
         </div>
+        </Link>
       </div>
     </div>
   );

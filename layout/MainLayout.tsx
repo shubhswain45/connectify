@@ -25,7 +25,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
     <div className={`h-screen bg-black text-white flex flex-col ${className || ""}`}>
       <ResizablePanelGroup direction="horizontal" className="flex-1 flex h-full overflow-hidden p-2">
         {/* Left Sidebar */}
-        <ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 10} maxSize={30}>
+        <ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 10} maxSize={50}>
           <LeftSidebar />
         </ResizablePanel>
 
@@ -36,17 +36,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
           {children}
         </ResizablePanel>
 
-        {!isMobile && (
-          <>
-            <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
-
-            {/* Right Sidebar */}
-            <ResizablePanel defaultSize={20} minSize={0} maxSize={25} collapsedSize={0}>
-              {/* Placeholder for a right sidebar */}
-              <div>Right Sidebar Content</div>
-            </ResizablePanel>
-          </>
-        )}
+  
       </ResizablePanelGroup>
 
       {/* <PlaybackControls /> */}
