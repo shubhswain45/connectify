@@ -36,7 +36,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
           {children}
         </ResizablePanel>
 
-  
+
       </ResizablePanelGroup>
 
       {/* <PlaybackControls /> */}

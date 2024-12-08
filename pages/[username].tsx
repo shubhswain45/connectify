@@ -3,7 +3,6 @@ import MainLayout from "@/layout/MainLayout";
 import Topbar from "@/components/Topbar";
 import { Edit2 } from "lucide-react"; // Lucide React icon for edit
 import FeaturedSection from "@/components/FeaturedSection";
-import SectionGrid from "@/components/SectionGrid";
 
 const UserPage = () => {
   return (
@@ -47,8 +46,7 @@ const UserPage = () => {
 
             {/* Additional Sections */}
             <div className="space-y-8">
-              <SectionGrid />
-              <SectionGrid />
+              
             </div>
           </div>
         </ScrollArea>

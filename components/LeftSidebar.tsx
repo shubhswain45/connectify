@@ -1,11 +1,15 @@
 import { buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Heart, HomeIcon, Library, MessageCircle } from "lucide-react";
+import { HomeIcon, Library, Plus } from "lucide-react";
 import Link from "next/link";
 import PlaylistSkeleton from "./PlaylistSkeleton";
+import { useState } from "react";
+import CreateTrackDialog from "./CreateTrackDialog";
 
 const LeftSidebar = () => {
+    const [songDialogOpen, setSongDialogOpen] = useState(false)
+
     // Dummy album data
     const albums = [
         {
@@ -52,32 +56,18 @@ const LeftSidebar = () => {
                         <span className="hidden md:inline">Home</span>
                     </Link>
 
-                    {/* Simulated signed-in condition */}
-                    <Link
-                        href={"/chat"}
+                    <div
+                        onClick={() => setSongDialogOpen(true)}
                         className={cn(
                             buttonVariants({
                                 variant: "ghost",
-                                className: "w-full justify-start text-white hover:bg-zinc-800 hover:text-white",
+                                className: "w-full justify-start text-white hover:bg-zinc-800 hover:text-white cursor-pointer",
                             })
                         )}
                     >
-                        <MessageCircle className="mr-2 size-5" />
-                        <span className="hidden md:inline">Messages</span>
-                    </Link>
-
-                    <Link
-                        href={"/liked"}
-                        className={cn(
-                            buttonVariants({
-                                variant: "ghost",
-                                className: "w-full justify-start text-white hover:bg-zinc-800 hover:text-white",
-                            })
-                        )}
-                    >
-                        <Heart className="mr-2 size-5" />
-                        <span className="hidden md:inline">Likes</span>
-                    </Link>
+                        <Plus className="mr-2 size-5" />
+                        <span className="hidden md:inline">Create</span>
+                    </div>
                 </div>
             </div>
 
@@ -120,6 +110,8 @@ const LeftSidebar = () => {
                     </div>
                 </ScrollArea>
             </div>
+            {songDialogOpen && <CreateTrackDialog songDialogOpen={songDialogOpen} setSongDialogOpen={setSongDialogOpen} />}
+
         </div>
     );
 };

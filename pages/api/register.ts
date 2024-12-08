@@ -26,7 +26,7 @@ export default function handler(
   const serializedCookie = serialize("__connectify_token_from_server", token, {
     httpOnly: true, // Ensure the cookie is accessible only through HTTP requests (not JS)
     secure: true, // Use secure cookie for production
-    maxAge: 3600, // Expire in 1 hour
+    maxAge: 1000 * 60 * 60 * 24,
     path: "/", // Cookie available across the entire site
     sameSite: 'none', // Prevent CSRF attacks
   });
