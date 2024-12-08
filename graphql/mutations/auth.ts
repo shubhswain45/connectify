@@ -38,3 +38,9 @@ export const loginUserMutation = graphql(`
         }
     }
 `)
+
+export const logoutUserMutation = graphql(`#graphql
+    mutation LogoutUser {
+        logoutUser
+    }
+`)

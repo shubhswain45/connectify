@@ -1,10 +1,11 @@
 import { LayoutDashboardIcon } from "lucide-react";
 import { buttonVariants } from "./ui/button";
 import Link from "next/link";
-import { useCurrentUser } from "@/hooks/auth";
+import { useCurrentUser, useLogoutUser } from "@/hooks/auth";
 
 const Topbar = () => {
   const { data, isLoading } = useCurrentUser()
+  const {mutate: logoutUser} = useLogoutUser()
 
   return (
     <div
@@ -27,7 +28,7 @@ const Topbar = () => {
             </button>
           ) : (
             data?.getCurrentUser && data?.getCurrentUser.isVerified ? (
-              <button className="bg-blue-500 text-white px-4 py-2 rounded">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => logoutUser()}>
                 Logout
               </button>
             ) : (

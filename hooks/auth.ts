@@ -1,6 +1,6 @@
 import { createGraphqlClient } from "@/clients/api";
 import { LoginUserInput, SignupUserInput, VerifyEmailInput } from "@/gql/graphql";
-import { loginUserMutation, signupUserMutation, verifyEmailMutation } from "@/graphql/mutations/auth";
+import { loginUserMutation, logoutUserMutation, signupUserMutation, verifyEmailMutation } from "@/graphql/mutations/auth";
 import { getCurrentUserQuery } from "@/graphql/query/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -42,7 +42,7 @@ export const useSignupUser = () => {
                 const { signupUser } = await graphQLClient.request(signupUserMutation, { input: userData });
 
                 if(signupUser){
-                    const res = await fetch("/api/hello", {
+                    const res = await fetch("/api/register", {
                         method: "POST",
                         headers: {
                           "Content-Type": "application/json",
@@ -123,7 +123,7 @@ export const useLoginUser = () => {
                 const graphqlClient = createGraphqlClient()
                 const { loginUser } = await graphqlClient.request(loginUserMutation, { input: userData });
                 if(loginUser){
-                    const res = await fetch("/api/hello", {
+                    const res = await fetch("/api/register", {
                         method: "POST",
                         headers: {
                           "Content-Type": "application/json",
@@ -163,5 +163,39 @@ export const useLoginUser = () => {
             const errorMessage = error.message.split(':').pop()?.trim() || "Something went wrong";
             toast.error(errorMessage);
         }
+    });
+};
+
+
+export const useLogoutUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async () => {
+            const graphqlClient = createGraphqlClient()
+            const { logoutUser } = await graphqlClient.request(logoutUserMutation);
+
+            const res = await fetch("/api/logout", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+    
+              if (!res.ok) {
+                throw new Error("Failed to set the cookie on the server.");
+              }
+    
+              // Return some useful data after success, such as a token if needed
+              return logoutUser
+        },
+
+        onSuccess: (data) => {
+            queryClient.setQueriesData({ queryKey: ['currentUser'] }, () => ({
+                getAuthUser: null
+            }));
+
+            toast.success("Logout successful!");
+        },
     });
 };
