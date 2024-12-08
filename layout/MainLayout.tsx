@@ -25,14 +25,14 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
     <div className={`h-screen bg-black text-white flex flex-col ${className || ""}`}>
       <ResizablePanelGroup direction="horizontal" className="flex-1 flex h-full overflow-hidden p-2">
         {/* Left Sidebar */}
-        <ResizablePanel defaultSize={20} minSize={isMobile ? 0 : 10} maxSize={50}>
+        <ResizablePanel defaultSize={isMobile ? 20 : 25} minSize={isMobile ? 0 : 10} maxSize={50}>
           <LeftSidebar />
         </ResizablePanel>
 
         <ResizableHandle className="w-20 bg-black rounded-lg transition-colors" />
 
         {/* Main Content */}
-        <ResizablePanel defaultSize={isMobile ? 80 : 60}>
+        <ResizablePanel defaultSize={isMobile ? 80 : 75}>
           {children}
         </ResizablePanel>
 
