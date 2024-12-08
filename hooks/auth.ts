@@ -1,9 +1,21 @@
 import { createGraphqlClient } from "@/clients/api";
 import { SignupUserInput, VerifyEmailInput } from "@/gql/graphql";
 import { signupUserMutation, verifyEmailMutation } from "@/graphql/mutations/auth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getCurrentUserQuery } from "@/graphql/query/auth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+
+export const useCurrentUser = () => {
+    return useQuery({
+        queryKey: ['currentUser'],
+        queryFn: async () => {
+            const graphqlClient = createGraphqlClient()
+            const data = await graphqlClient.request(getCurrentUserQuery)
+            return data
+        }
+    })
+}
 
 export const useSignupUser = () => {
     const queryClient = useQueryClient();

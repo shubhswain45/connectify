@@ -1,8 +1,12 @@
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import MainLayout from "@/layout/MainLayout";
 import Topbar from "@/components/Topbar";
 import FeaturedSection from "@/components/FeaturedSection";
 import SectionGrid from "@/components/SectionGrid";
+import { useCurrentUser } from "@/hooks/auth";
+import { Loader } from "lucide-react";
 
 const HomePage = () => {
   return (
@@ -12,7 +16,6 @@ const HomePage = () => {
         <Topbar />
 
         {/* Scrollable Content */}
-
         <ScrollArea className="h-[calc(100vh-180px)]">
           <div className="p-4 sm:p-6">
             {/* Greeting Section */}

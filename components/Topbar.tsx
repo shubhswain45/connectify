@@ -1,10 +1,12 @@
 import { LayoutDashboardIcon } from "lucide-react";
 import { buttonVariants } from "./ui/button";
 import Link from "next/link";
+import { useCurrentUser } from "@/hooks/auth";
 
 const Topbar = () => {
-  // Hardcoded value for admin access
-  const isAdmin = false;
+  const { data, isLoading } = useCurrentUser()
+
+
 
   return (
     <div
@@ -19,26 +21,36 @@ const Topbar = () => {
 
       {/* Right Section */}
       <div className="flex items-center gap-4">
-        {/* Admin Dashboard Link */}
-        {isAdmin && (
-          <Link href="/admin" className={buttonVariants({ variant: "outline" })}>
-            <LayoutDashboardIcon className="size-4 mr-2" />
-            Admin Dashboard
-          </Link>
-        )}
-
         {/* Sign-In Buttons (Hardcoded Example) */}
-        <button className="bg-blue-500 text-white px-4 py-2 rounded">
-          Sign In
-        </button>
+        {
+          isLoading ? (
+            <button className="bg-blue-500 text-white px-4 py-2 rounded w-20 h-7">
+
+            </button>
+          ) : (
+            !data?.getCurrentUser ? (
+              <button className="bg-blue-500 text-white px-4 py-2 rounded">
+                Sign In
+              </button>
+            ) : (
+              <button className="bg-blue-500 text-white px-4 py-2 rounded">
+                Logout
+              </button>
+            )
+          )
+        }
+
 
         {/* User Button Placeholder */}
-
-        <Link href={`/shubh`}>
-        <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
-          U
-        </div>
-        </Link>
+        {
+          !isLoading && data?.getCurrentUser && (
+            <Link href={`/shubh`}>
+              <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                U
+              </div>
+            </Link>
+          )
+        }
       </div>
     </div>
   );
