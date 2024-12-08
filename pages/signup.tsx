@@ -34,7 +34,7 @@ function Signup() {
 
   // Handle email verification form submission
   const handleVerifyEmail = async (data: any) => {
-    await verifyEmail({ code: data.verificationCode, email: data.email })
+    await verifyEmail({ code: data.verificationCode, email: data?.email })
   };
 
   // Show the Signup Form or the Verify Email page

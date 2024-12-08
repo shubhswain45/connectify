@@ -23,3 +23,18 @@ export const verifyEmailMutation = graphql(`
     }
   }
 `);
+
+export const loginUserMutation = graphql(`
+    #graphql
+    mutation LoginUser($input: LoginUserInput!) {
+        loginUser(input: $input) {
+            id
+            profileImageURL
+            email
+            username
+            fullName
+            isVerified
+            token
+        }
+    }
+`)

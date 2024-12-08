@@ -6,8 +6,6 @@ import { useCurrentUser } from "@/hooks/auth";
 const Topbar = () => {
   const { data, isLoading } = useCurrentUser()
 
-
-
   return (
     <div
       className="flex items-center justify-between p-4 sticky top-0 bg-zinc-900/75 
@@ -28,18 +26,19 @@ const Topbar = () => {
 
             </button>
           ) : (
-            !data?.getCurrentUser ? (
-              <button className="bg-blue-500 text-white px-4 py-2 rounded">
-                Sign In
-              </button>
-            ) : (
+            data?.getCurrentUser && data?.getCurrentUser.isVerified ? (
               <button className="bg-blue-500 text-white px-4 py-2 rounded">
                 Logout
               </button>
+            ) : (
+              <Link href={"/login"}>
+                <button className="bg-blue-500 text-white px-4 py-2 rounded">
+                  Sign In
+                </button>
+              </Link>
             )
           )
         }
-
 
         {/* User Button Placeholder */}
         {

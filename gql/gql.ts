@@ -16,6 +16,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n  #graphql\n  mutation SignupUser($input: SignupUserInput!) {\n    signupUser(input: $input) {\n      email\n      token\n    }\n  }\n": types.SignupUserDocument,
     "\n  #graphql\n  mutation VerifyEmail($input: VerifyEmailInput!) {\n    verifyEmail(input: $input) {\n      id\n      profileImageURL\n      email\n      username\n      fullName\n      isVerified\n    }\n  }\n": types.VerifyEmailDocument,
+    "\n    #graphql\n    mutation LoginUser($input: LoginUserInput!) {\n        loginUser(input: $input) {\n            id\n            profileImageURL\n            email\n            username\n            fullName\n            isVerified\n            token\n        }\n    }\n": types.LoginUserDocument,
     "#graphql\n    query GetCurrentUser {\n        getCurrentUser {\n            id\n            profileImageURL\n            email\n            username\n            fullName\n            isVerified\n        }\n    }\n": types.GetCurrentUserDocument,
 };
 
@@ -41,6 +42,10 @@ export function graphql(source: "\n  #graphql\n  mutation SignupUser($input: Sig
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  #graphql\n  mutation VerifyEmail($input: VerifyEmailInput!) {\n    verifyEmail(input: $input) {\n      id\n      profileImageURL\n      email\n      username\n      fullName\n      isVerified\n    }\n  }\n"): (typeof documents)["\n  #graphql\n  mutation VerifyEmail($input: VerifyEmailInput!) {\n    verifyEmail(input: $input) {\n      id\n      profileImageURL\n      email\n      username\n      fullName\n      isVerified\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    #graphql\n    mutation LoginUser($input: LoginUserInput!) {\n        loginUser(input: $input) {\n            id\n            profileImageURL\n            email\n            username\n            fullName\n            isVerified\n            token\n        }\n    }\n"): (typeof documents)["\n    #graphql\n    mutation LoginUser($input: LoginUserInput!) {\n        loginUser(input: $input) {\n            id\n            profileImageURL\n            email\n            username\n            fullName\n            isVerified\n            token\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

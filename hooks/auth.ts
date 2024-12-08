@@ -1,6 +1,6 @@
 import { createGraphqlClient } from "@/clients/api";
-import { SignupUserInput, VerifyEmailInput } from "@/gql/graphql";
-import { signupUserMutation, verifyEmailMutation } from "@/graphql/mutations/auth";
+import { LoginUserInput, SignupUserInput, VerifyEmailInput } from "@/gql/graphql";
+import { loginUserMutation, signupUserMutation, verifyEmailMutation } from "@/graphql/mutations/auth";
 import { getCurrentUserQuery } from "@/graphql/query/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -94,6 +94,9 @@ export const useVerifyEmail = () => {
         },
 
         onSuccess: (data) => {
+            queryClient.setQueryData(["currentUser"], () => {
+                return { getCurrentUser: data }
+            })
             toast.success("Email verification successful!");
             router.replace("/")
         },
@@ -104,3 +107,61 @@ export const useVerifyEmail = () => {
         }
     });
 }
+
+export const useLoginUser = () => {
+    const queryClient = useQueryClient();
+    const router = useRouter();
+
+    return useMutation({
+        mutationFn: async (userData: LoginUserInput) => {
+            // Check if all required fields are filled
+            if (!userData.usernameOrEmail || !userData.password) {
+                throw new Error("Please fill both fields");
+            }
+
+            try {
+                const graphqlClient = createGraphqlClient()
+                const { loginUser } = await graphqlClient.request(loginUserMutation, { input: userData });
+                if(loginUser){
+                    const res = await fetch("/api/hello", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          token: loginUser.token
+                        }),
+                      });
+            
+                      if (!res.ok) {
+                        throw new Error("Failed to set the cookie on the server.");
+                      }
+            
+                      // Return some useful data after success, such as a token if needed
+                      return loginUser
+                }
+            } catch (error: any) {
+                // Throw only the error message for concise output
+                throw new Error(error?.response?.errors?.[0]?.message || "Something went wrong");
+            }
+        },
+
+        onSuccess: (data) => {
+            if (!data?.isVerified) {
+                toast.error("Your account is not verified! Pls verified");
+
+            } else {
+                toast.success("Login successful!");
+            }
+
+            queryClient.setQueryData(["currentUser"], () => {
+                return { getCurrentUser: data }
+            })
+        },
+
+        onError: (error: any) => {
+            const errorMessage = error.message.split(':').pop()?.trim() || "Something went wrong";
+            toast.error(errorMessage);
+        }
+    });
+};
