@@ -1,6 +1,6 @@
 import { createGraphqlClient } from "@/clients/api";
-import { LoginUserInput, SignupUserInput, VerifyEmailInput } from "@/gql/graphql";
-import { loginUserMutation, logoutUserMutation, signupUserMutation, verifyEmailMutation } from "@/graphql/mutations/auth";
+import { LoginUserInput, ResetPasswordInput, SignupUserInput, VerifyEmailInput } from "@/gql/graphql";
+import { forgotPasswordMutation, loginUserMutation, logoutUserMutation, resetPasswordMutation, signupUserMutation, verifyEmailMutation } from "@/graphql/mutations/auth";
 import { getCurrentUserQuery } from "@/graphql/query/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -151,6 +151,7 @@ export const useLoginUser = () => {
                 toast.error("Your account is not verified! Pls verified");
 
             } else {
+                router.replace("/")
                 toast.success("Login successful!");
             }
 
@@ -199,3 +200,63 @@ export const useLogoutUser = () => {
         },
     });
 };
+
+export const useForgotPassword = () => {
+    return useMutation({
+        mutationFn: async (usernameOrEmail: string) => {
+            if (!usernameOrEmail) {
+                throw new Error("Email or Username is required!")
+            }
+            try {
+                const graphqlClient = createGraphqlClient()
+                const { forgotPassword } = await graphqlClient.request(forgotPasswordMutation, { usernameOrEmail });
+                return forgotPassword;
+            } catch (error: any) {
+                // Throw only the error message for concise output
+                throw new Error(error?.response?.errors?.[0]?.message || "Something went wrong");
+            }
+        },
+
+        onSuccess: (data) => {
+            toast.success("Reset link send successful to your Email!");
+        },
+
+        onError: (error) => {
+            const errorMessage = error.message.split(':').pop()?.trim() || "Something went wrong";
+            toast.error(errorMessage);
+        }
+    });
+}
+
+export const useResetPassword = () => {
+    return useMutation({
+        mutationFn: async (input: ResetPasswordInput) => {
+
+            if (input.newPassword != input.confirmPassword) {
+                throw new Error("Password does't match.")
+            }
+
+            if (input.newPassword.length < 6) {
+                throw new Error("Password must be at least 6 characters long.");
+            }
+
+            try {
+                const graphqlClient = createGraphqlClient()
+                const { resetPassword } = await graphqlClient.request(resetPasswordMutation, { input });
+                return resetPassword;
+            } catch (error: any) {
+                // Throw only the error message for concise output
+                throw new Error(error?.response?.errors?.[0]?.message || "Something went wrong");
+            }
+        },
+
+        onSuccess: (data) => {
+            toast.success("Reset password successful! now back to login");
+        },
+
+        onError: (error) => {
+            const errorMessage = error.message.split(':').pop()?.trim() || "Something went wrong";
+            toast.error(errorMessage);
+        }
+    });
+}

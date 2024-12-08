@@ -441,7 +441,7 @@
             "description": null,
             "args": [
               {
-                "name": "emailOrUsername",
+                "name": "usernameOrEmail",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
