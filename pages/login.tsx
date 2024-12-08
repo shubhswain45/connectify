@@ -33,6 +33,7 @@ function LoginPage() {
         setIsLoginPage(false);
       }
     } catch (error) {
+      console.log(error);
       setIsLoginPage(true);
     }
   };

@@ -34,6 +34,7 @@ function Signup() {
         setIsSignupPage(false);
       }
     } catch (error) {
+      console.log(error);
       setIsSignupPage(true);
     }
   };
