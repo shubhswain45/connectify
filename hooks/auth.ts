@@ -1,7 +1,8 @@
 import { createGraphqlClient } from "@/clients/api";
-import { SignupUserInput } from "@/gql/graphql";
-import { signupUserMutation } from "@/graphql/mutations/auth";
+import { SignupUserInput, VerifyEmailInput } from "@/gql/graphql";
+import { signupUserMutation, verifyEmailMutation } from "@/graphql/mutations/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 
 export const useSignupUser = () => {
@@ -63,3 +64,31 @@ export const useSignupUser = () => {
         }
     });
 };
+
+export const useVerifyEmail = () => {
+    const queryClient = useQueryClient();
+    const router = useRouter()
+
+    return useMutation({
+        mutationFn: async (input: VerifyEmailInput) => {
+            try {
+                const graphqlClient = createGraphqlClient()
+                const { verifyEmail } = await graphqlClient.request(verifyEmailMutation, { input });
+                return verifyEmail;
+            } catch (error: any) {
+                // Throw only the error message for concise output
+                throw new Error(error?.response?.errors?.[0]?.message || "Something went wrong");
+            }
+        },
+
+        onSuccess: (data) => {
+            toast.success("Email verification successful!");
+            router.replace("/")
+        },
+
+        onError: (error) => {
+            const errorMessage = error.message.split(':').pop()?.trim() || "Something went wrong";
+            toast.error(errorMessage);
+        }
+    });
+}

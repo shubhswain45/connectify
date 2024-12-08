@@ -1,12 +1,13 @@
 import { SignupUserInput } from '@/gql/graphql';
-import { useSignupUser } from '@/hooks/auth';
+import { useSignupUser, useVerifyEmail } from '@/hooks/auth';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 function Signup() {
-  const { mutateAsync: signupUser, isPending } = useSignupUser();
+  const { mutateAsync: signupUser, isPending: isSignupSubmitting } = useSignupUser();
+  const { mutateAsync: verifyEmail, isPending: isVerifySubmitting } = useVerifyEmail();
 
   const [isSignupPage, setIsSignupPage] = useState(true);  // Initially on signup page
 
@@ -33,9 +34,7 @@ function Signup() {
 
   // Handle email verification form submission
   const handleVerifyEmail = async (data: any) => {
-    // Logic for handling email verification
-    console.log("Verification Code Submitted:", data.verificationCode);
-    // You can add verification logic here (e.g., call API to verify the code)
+    await verifyEmail({ code: data.verificationCode, email: data.email })
   };
 
   // Show the Signup Form or the Verify Email page
@@ -106,7 +105,7 @@ function Signup() {
 
             {/* Submit Button */}
             <button type="submit" className="w-full py-3 bg-green-500 rounded-full text-white font-semibold hover:bg-green-600 focus:outline-none">
-              {isPending ? <Loader className="animate-spin mx-auto" size={25} /> : 'Sign Up'}
+              {isSignupSubmitting ? <Loader className="animate-spin mx-auto" size={25} /> : 'Sign Up'}
             </button>
           </form>
 
@@ -139,7 +138,7 @@ function Signup() {
         <div className="bg-[#121112] rounded-lg shadow-lg w-full max-w-md p-9 mt-32">
           <h2 className="text-2xl font-semibold mb-6">Verify Your Email</h2>
           <p className="text-gray-400 mb-4">A verification email has been sent to your email address. Please check your inbox to complete the registration process.</p>
-          
+
           {/* Email Verification Form */}
           <form className="space-y-6" onSubmit={handleSubmit(handleVerifyEmail)}>
             <div>
@@ -150,14 +149,14 @@ function Signup() {
                 id="verificationCode"
                 type="text"
                 placeholder="Enter Verification Code"
-                {...register('verificationCode', { required: true })}
+                {...register('verificationCode')}
                 className="w-full p-2 bg-transparent text-white border-[0.5px] border-white rounded-md focus:outline-none focus:border-white focus:ring-2 focus:ring-white"
               />
             </div>
 
             {/* Submit Button for Verification */}
             <button type="submit" className="w-full py-3 bg-green-500 rounded-full text-white font-semibold hover:bg-green-600 focus:outline-none">
-              Verify Email
+              {isVerifySubmitting ? <Loader className="animate-spin mx-auto" size={25} /> : 'Verify Email'}
             </button>
           </form>
         </div>
