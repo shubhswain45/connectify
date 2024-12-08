@@ -1,9 +1,16 @@
-import { SignupUserInput } from '@/gql/graphql';
 import { useSignupUser, useVerifyEmail } from '@/hooks/auth';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+
+interface Input {
+  email: string;
+  fullName: string;
+  password: string;
+  username: string;
+  verificationCode: string;
+}
 
 function Signup() {
   const { mutateAsync: signupUser, isPending: isSignupSubmitting } = useSignupUser();
@@ -15,11 +22,10 @@ function Signup() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm();
+  } = useForm<Input>();
 
   // Handle form submission for signup
-  const handleSignupUser = async (data: any) => {
+  const handleSignupUser = async (data: Input) => {
     try {
       const signupResponse = await signupUser(data);  // Attempt signup
 
@@ -33,7 +39,7 @@ function Signup() {
   };
 
   // Handle email verification form submission
-  const handleVerifyEmail = async (data: any) => {
+  const handleVerifyEmail = async (data: Input) => {
     await verifyEmail({ code: data.verificationCode, email: data?.email })
   };
 

@@ -1,26 +1,30 @@
-import { SignupUserInput } from '@/gql/graphql';
-import { useCurrentUser, useLoginUser, useSignupUser, useVerifyEmail } from '@/hooks/auth';
+import { useCurrentUser, useLoginUser, useVerifyEmail } from '@/hooks/auth';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+interface Input {
+  password: string;
+  usernameOrEmail: string;
+  verificationCode: string
+}
+
 function LoginPage() {
   const { mutateAsync: loginUser, isPending: isLoginSubmitting } = useLoginUser();
   const { mutateAsync: verifyEmail, isPending: isVerifySubmitting } = useVerifyEmail();
-  const { data: user, isLoading } = useCurrentUser()
+  const { data: user } = useCurrentUser()
 
   const [isLoginPage, setIsLoginPage] = useState(true);  // Initially on signup page
 
   // Set up React Hook Form
   const {
     register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+    handleSubmit
+  } = useForm<Input>();
 
   // Handle form submission for signup
-  const handleSignupUser = async (data: any) => {
+  const handleLoginUser = async (data: Input) => {
     try {
       const loginResponse = await loginUser(data);  // Attempt signup
 
@@ -34,8 +38,8 @@ function LoginPage() {
   };
 
   // Handle email verification form submission
-  const handleVerifyEmail = async (data: any) => {
-    await verifyEmail({ code: data.verificationCode, email: user?.getCurrentUser?.email || ""})
+  const handleVerifyEmail = async (data: Input) => {
+    await verifyEmail({ code: data.verificationCode, email: user?.getCurrentUser?.email || "" })
   };
 
   // Show the Signup Form or the Verify Email page
@@ -47,7 +51,7 @@ function LoginPage() {
           <h2 className="text-2xl font-semibold mb-6 text-center">Signup to Connectify</h2>
 
           {/* Signup Form */}
-          <form className="space-y-6" onSubmit={handleSubmit(handleSignupUser)}>
+          <form className="space-y-6" onSubmit={handleSubmit(handleLoginUser)}>
             {/* Username Input */}
             <div>
               <label htmlFor="username" className="block text-xs font-semibold text-gray-300 mb-2">
