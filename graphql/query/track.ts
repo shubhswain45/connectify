@@ -22,6 +22,7 @@ export const getTrackByIdQuery = graphql(`#graphql
           duration
           audioFileUrl  
           coverImageUrl
+          hasLiked
   }
 }
   `)

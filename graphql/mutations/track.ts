@@ -18,3 +18,9 @@ export const createTrackMutation = graphql(`#graphql
     }
   }
   `)
+
+export const likeTrackMutation = graphql(`#graphql
+ mutation LikeTrack($trackId: String!) {
+  likeTrack(trackId: $trackId)
+}
+`)

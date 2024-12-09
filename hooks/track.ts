@@ -1,6 +1,6 @@
 import { createGraphqlClient } from "@/clients/api";
 import { CreateTrackPayload } from "@/gql/graphql";
-import { createTrackMutation } from "@/graphql/mutations/track";
+import { createTrackMutation, likeTrackMutation } from "@/graphql/mutations/track";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
@@ -38,6 +38,32 @@ export const useCreateTrack = () => {
         },
         onSuccess: () => {
             toast.success("Track created successfully");
+        },
+        onError: (error: any) => {
+            const errorMessage = error.message.split(":").pop()?.trim() || "Something went wrong";
+            toast.error(errorMessage);
+        },
+    });
+};
+
+export const useLikeTrack = () => {
+    const router = useRouter();
+
+    return useMutation({
+        mutationFn: async (trackId: string) => {
+            if (!trackId) {
+                toast.error("trackId is require");
+            }
+
+            try {
+                const graphqlClient = createGraphqlClient();
+                const { likeTrack } = await graphqlClient.request(likeTrackMutation, {trackId});
+                return likeTrack;
+            } catch (error: any) {
+                throw new Error(
+                    error?.response?.errors?.[0]?.message || "Something went wrong"
+                );
+            }
         },
         onError: (error: any) => {
             const errorMessage = error.message.split(":").pop()?.trim() || "Something went wrong";

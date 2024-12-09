@@ -7,11 +7,16 @@ import { Slider } from "@/components/ui/slider";
 import { createGraphqlClient } from "@/clients/api";
 import { getTrackByIdQuery } from "@/graphql/query/track";
 import { Track } from "@/gql/graphql";
+import { FaHeart } from "react-icons/fa";
+import { parseCookies } from "nookies";
+import { useLikeTrack } from "@/hooks/track";
 
 const AudioDetailPage = ({ track }: { track: Track | null }) => {
     const [isPlaying, setIsPlaying] = useState(false); // Play/Pause state
     const [progress, setProgress] = useState(0); // Track progress state
-    const [isFavorite, setIsFavorite] = useState(false); // Favorite state
+    const [isFavorite, setIsFavorite] = useState(track?.hasLiked); // Favorite state
+
+    const { mutateAsync: likeTrack, isPending } = useLikeTrack()
 
     const formatTime = (seconds: number) => {
         const minutes = Math.floor(seconds / 60);
@@ -19,6 +24,10 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
         return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
     };
 
+    const handleLike = async () => {
+        await likeTrack(track?.id || "")
+        setIsFavorite(!isFavorite)
+    }
     const togglePlayPause = () => {
         setIsPlaying((prev) => !prev);
     };
@@ -34,6 +43,7 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
     return (
         <MainLayout>
             <main className="rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900">
+
                 <Topbar />
                 <ScrollArea className="h-[calc(100vh-180px)]">
                     <div className="p-4 sm:p-6">
@@ -61,13 +71,21 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
                                 />
                                 {/* Heart Icon */}
                                 <button
-                                    onClick={toggleFavorite}
+                                    onClick={handleLike}
                                     className="absolute -top-9 right-0 text-red-500 hover:text-red-600"
                                     aria-label="Toggle Favorite"
                                 >
-                                    <Heart size={20} />
+                                    {
+                                        isPending ? (
+                                            <div className="flex items-center justify-center">
+                                                <div className="w-4 h-4 border-2 border-t-transparent border-white animate-spin rounded-full"></div>
+                                            </div>
+                                        ) : (
+                                            isFavorite ? <FaHeart className="text-red-500" size={20} /> : <Heart size={20} />
+                                        )
+                                    }
                                 </button>
-                                   <button
+                                <button
                                     onClick={toggleFavorite}
                                     className="absolute -top-9 left-0 text-white font-bold"
                                     aria-label="Toggle Favorite"
@@ -107,13 +125,23 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
 // SSR: Fetch track data on the server
 export async function getServerSideProps(context: any) {
     const { trackId } = context.params;
-    const graphqlClient = createGraphqlClient();
+    const cookies = parseCookies(context);  // Parse cookies from the context
+    const token = cookies.__connectify_token_from_server;  // Get the token
 
-    const { getTrackById } = await graphqlClient.request(getTrackByIdQuery, { trackId });
+    console.log("token", token);
+
+    let track = null;
+
+    if (token) {
+        // If the token exists, consider the user as logged in
+        const graphqlClient = createGraphqlClient(token);
+        const { getTrackById } = await graphqlClient.request(getTrackByIdQuery, { trackId });
+        track = getTrackById;
+    }
 
     return {
         props: {
-            track: getTrackById,
+            track,
         },
     };
 }
