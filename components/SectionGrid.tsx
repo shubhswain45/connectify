@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import PlayButton from "@/components/PlayButton";
 import { Track } from "@/gql/graphql";
+import Link from "next/link";
 
 interface SectionGridProps {
   tracks: Track[]
@@ -24,11 +25,13 @@ const SectionGrid = ({ tracks }: SectionGridProps) => {
           >
             <div className="relative mb-4">
               <div className="aspect-square rounded-md shadow-lg overflow-hidden">
+                <Link href={`/show/${track.id}`}>
                 <img
                   src={track.coverImageUrl || ""}
                   alt={track.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+                  />
+                  </Link>
               </div>
               <PlayButton track={track} />
             </div>
