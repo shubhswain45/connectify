@@ -17,10 +17,9 @@ import { FaHeart } from "react-icons/fa";
 import { parseCookies } from "nookies";
 import { useLikeTrack } from "@/hooks/track";
 import { useAudioStore } from "@/store/useAudioStore";
+import { GetServerSidePropsContext } from "next";
 
 const AudioDetailPage = ({ track }: { track: Track | null }) => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
     const [isFavorite, setIsFavorite] = useState(track?.hasLiked);
     const { audioDetails, setAudioDetails } = useAudioStore();
     const [currentTime, setCurrentTime] = useState(0);
@@ -58,14 +57,6 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
     const handleLike = async () => {
         await likeTrack(track?.id || "");
         setIsFavorite(!isFavorite);
-    };
-
-    const toggleFavorite = () => {
-        setIsFavorite((prev) => !prev);
-    };
-
-    const handleSliderChange = (value: number[]) => {
-        setProgress(value[0]);
     };
 
     const handleSeek = (value: number[]) => {
@@ -208,8 +199,8 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
     );
 };
 
-export async function getServerSideProps(context: any) {
-    const { trackId } = context.params;
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+    const { trackId } = context.params as { trackId: string };
     const cookies = parseCookies(context);
     const token = cookies.__connectify_token_from_server;
 

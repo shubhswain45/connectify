@@ -2,7 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Topbar from "@/components/Topbar";
 import { Edit2 } from "lucide-react"; // Lucide React icon for edit
 import FeaturedSection from "@/components/FeaturedSection";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { parseCookies } from "nookies"; // Used for parsing cookies
 import { createGraphqlClient } from "@/clients/api";
 import { getUserProfileQuery, getUserTracksQuery } from "@/graphql/query/user";
@@ -83,8 +83,8 @@ const UserPage = ({ user, userTracks }: UserPageProps) => {
 };
 
 // Server-side data fetching for SSR
-export const getServerSideProps: GetServerSideProps = async (context: any) => {
-  const { username } = context.params;  // Get the username from the URL params
+export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+  const { username } = context.params as { username: string };
   const cookies = parseCookies(context);  // Parse cookies from the context
   const token = cookies.__connectify_token_from_server;  // Get the token
   let user = null
