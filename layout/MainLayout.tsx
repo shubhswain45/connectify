@@ -1,4 +1,5 @@
 import LeftSidebar from "@/components/LeftSidebar";
+import { PlaybackControls } from "@/components/PlayBackControlrs";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 import { useEffect, useState, ReactNode } from "react";
@@ -39,7 +40,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
 
       </ResizablePanelGroup>
 
-      {/* <PlaybackControls /> */}
+      <PlaybackControls />
     </div>
   );
 };

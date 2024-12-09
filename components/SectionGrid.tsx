@@ -30,7 +30,7 @@ const SectionGrid = ({ tracks }: SectionGridProps) => {
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <PlayButton />
+              <PlayButton track={track} />
             </div>
             <h3 className="font-medium mb-2 truncate">{track.title}</h3>
             <p className="text-sm text-zinc-400 truncate">{track.artist}</p>
