@@ -6,7 +6,6 @@ import { Track } from "@/gql/graphql";
 import { parseCookies } from "nookies";  // Import nookies to parse cookies
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import MainLayout from "@/layout/MainLayout";
 import Topbar from "@/components/Topbar";
 import FeaturedSection from "@/components/FeaturedSection";
 import SectionGrid from "@/components/SectionGrid";

@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-    PlayCircle,
-    PauseCircle,
     SkipBack,
     SkipForward,
     Heart,
@@ -10,7 +8,6 @@ import {
     MoreHorizontal,
 } from "lucide-react"; // Added More icon
 import { ScrollArea } from "@/components/ui/scroll-area";
-import MainLayout from "@/layout/MainLayout";
 import Topbar from "@/components/Topbar";
 import { Slider } from "@/components/ui/slider";
 import { createGraphqlClient } from "@/clients/api";
