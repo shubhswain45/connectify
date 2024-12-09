@@ -82,7 +82,7 @@ const UserPage = ({ user, userTracks }: UserPageProps) => {
   );
 };
 
-// Server-side data fetching for SSR
+// Server-side data fetching for SSR     
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
   const { username } = context.params as { username: string };
   const cookies = parseCookies(context);  // Parse cookies from the context
