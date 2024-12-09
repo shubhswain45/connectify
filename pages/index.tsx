@@ -17,7 +17,6 @@ interface HomePageProps {
 
 const HomePage = ({ tracks }: HomePageProps) => {
   return (
-    <MainLayout>
       <main className="rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900">
         {/* Topbar */}
         <Topbar />
@@ -55,7 +54,6 @@ const HomePage = ({ tracks }: HomePageProps) => {
           </div>
         </ScrollArea>
       </main>
-    </MainLayout>
   );
 };
 

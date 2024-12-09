@@ -1,16 +1,18 @@
 import LeftSidebar from "@/components/LeftSidebar";
-import { PlaybackControls } from "@/components/PlayBackControlrs";
+import { PlaybackControls } from "@/components/PlaybackControlrs";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-
 import { useEffect, useState, ReactNode } from "react";
+import { useRouter } from "next/router"; // Import useRouter
+import DummyControls from "@/components/DummyControls";
 
 interface MainLayoutProps {
-  children: ReactNode; // Allows you to pass child components
-  className?: string;   // Optional additional CSS class for layout customization
+  children: ReactNode;
+  className?: string;
 }
 
 const MainLayout = ({ children, className }: MainLayoutProps) => {
   const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter(); // Get the current route
 
   useEffect(() => {
     const checkMobile = () => {
@@ -21,6 +23,9 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Check if the current route is `/show/[trackId]` or any path starting with `/show`
+  const isShowPage = router.pathname.startsWith('/show');
 
   return (
     <div className={`h-screen bg-black text-white flex flex-col ${className || ""}`}>
@@ -36,11 +41,10 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
         <ResizablePanel defaultSize={isMobile ? 80 : 75}>
           {children}
         </ResizablePanel>
-
-
       </ResizablePanelGroup>
 
-      <PlaybackControls />
+      {/* Conditionally render PlaybackControls based on the route */}
+      {!isShowPage ? <PlaybackControls />: <DummyControls/>}
     </div>
   );
 };
