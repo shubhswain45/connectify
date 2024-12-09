@@ -111,7 +111,7 @@ const LikePage = () => {
                             <h2 className="text-4xl font-bold text-white mb-4">Liked Songs</h2>
 
                             {/* Play Button */}
-                            <PlayButton />
+                            {/* <PlayButton /> */}
                         </div>
 
                         {/* Song List Section */}
