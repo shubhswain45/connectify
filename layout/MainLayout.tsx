@@ -35,7 +35,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
           <LeftSidebar />
         </ResizablePanel>
 
-        <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" />
+        <ResizableHandle className="w-1 bg-black rounded-lg transition-colors" />
 
         {/* Main Content */}
         <ResizablePanel defaultSize={isMobile ? 80 : 75}>

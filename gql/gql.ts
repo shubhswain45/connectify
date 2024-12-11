@@ -20,6 +20,7 @@ const documents = {
     "#graphql\n    mutation LogoutUser {\n        logoutUser\n    }\n": types.LogoutUserDocument,
     "#graphql\n    mutation ForgotPassword($usernameOrEmail: String!) {\n  forgotPassword(usernameOrEmail: $usernameOrEmail)\n}\n": types.ForgotPasswordDocument,
     "#graphql\n  mutation ResetPassword($input: ResetPasswordInput!){       \n      resetPassword(input: $input)\n  }\n": types.ResetPasswordDocument,
+    "#graphql\nmutation AddSongToPlaylist($payload: AddSongToPlaylistInput!) {\n  addSongToPlaylist(payload: $payload)\n}\n": types.AddSongToPlaylistDocument,
     "#graphql\n    mutation CreateTrack($payload: createTrackPayload!) {\n    createTrack(payload: $payload) {\n      id\n      title\n      artist\n      duration\n      coverImageUrl\n      audioFileUrl\n  \n      author {\n        id\n        username\n        profileImageURL\n      }\n    }\n  }\n  ": types.CreateTrackDocument,
     "#graphql\n mutation LikeTrack($trackId: String!) {\n  likeTrack(trackId: $trackId)\n}\n": types.LikeTrackDocument,
     "#graphql\n    mutation FollowUser($userId: String!) {\n  followUser(userId: $userId)\n}\n": types.FollowUserDocument,
@@ -68,6 +69,10 @@ export function graphql(source: "#graphql\n    mutation ForgotPassword($username
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "#graphql\n  mutation ResetPassword($input: ResetPasswordInput!){       \n      resetPassword(input: $input)\n  }\n"): (typeof documents)["#graphql\n  mutation ResetPassword($input: ResetPasswordInput!){       \n      resetPassword(input: $input)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "#graphql\nmutation AddSongToPlaylist($payload: AddSongToPlaylistInput!) {\n  addSongToPlaylist(payload: $payload)\n}\n"): (typeof documents)["#graphql\nmutation AddSongToPlaylist($payload: AddSongToPlaylistInput!) {\n  addSongToPlaylist(payload: $payload)\n}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
