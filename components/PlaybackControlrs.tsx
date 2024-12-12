@@ -86,9 +86,7 @@ export const PlaybackControls = () => {
           {audioDetails.title && (
             <>
               <img
-                src={
-                  "https://toppng.com/uploads/preview/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png"
-                }
+                src={audioDetails.coverImageUrl || ""}
                 alt={audioDetails.title}
                 className="w-14 h-14 object-cover rounded-md"
               />

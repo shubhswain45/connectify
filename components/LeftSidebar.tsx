@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { HomeIcon, Library, Plus } from "lucide-react";
 import Link from "next/link";
-import {PlaylistSkeleton} from "./PlaylistSkeleton";
+import { PlaylistSkeleton } from "./PlaylistSkeleton";
 import { useState } from "react";
 import CreateTrackDialog from "./CreateTrackDialog";
 import { useGetUserPlaylists } from "@/hooks/playlist";
@@ -11,36 +11,8 @@ import { useCurrentUser } from "@/hooks/auth";
 
 const LeftSidebar = () => {
     const [songDialogOpen, setSongDialogOpen] = useState(false);
-    const { data: user, isLoading } = useCurrentUser()
-    const { data, isLoading: isFetchingUserPlaylist } = useGetUserPlaylists(user?.getCurrentUser?.username || "")
-
-    // Dummy album data
-    const albums = [
-        {
-            _id: "1",
-            imageUrl: "/images/album1.jpg",
-            title: "Album One",
-            artist: "Artist One",
-        },
-        {
-            _id: "2",
-            imageUrl: "/images/album2.jpg",
-            title: "Album Two",
-            artist: "Artist Two",
-        },
-        {
-            _id: "3",
-            imageUrl: "/images/album3.jpg",
-            title: "Album Three",
-            artist: "Artist Three",
-        },
-        {
-            _id: "4",
-            imageUrl: "/images/album4.jpg",
-            title: "Album Four",
-            artist: "Artist Four",
-        },
-    ];
+    const { data: user, isLoading } = useCurrentUser();
+    const { data, isLoading: isFetchingUserPlaylist } = useGetUserPlaylists(user?.getCurrentUser?.username || "");
 
     return (
         <div className="h-full flex flex-col gap-2 mr-1">
@@ -48,7 +20,7 @@ const LeftSidebar = () => {
             <div className="rounded-lg bg-zinc-900 p-4">
                 <div className="space-y-2">
                     <Link
-                        href={"/"}
+                        href="/"
                         className={cn(
                             buttonVariants({
                                 variant: "ghost",
@@ -82,7 +54,6 @@ const LeftSidebar = () => {
                         <Library className="size-5 mr-2" />
                         <span className="hidden md:inline">Playlists</span>
                     </div>
-                    {/* Plus Icon for adding playlist */}
                     <button
                         onClick={() => setSongDialogOpen(true)}
                         className="text-zinc-400 hover:text-white transition-colors"
@@ -94,20 +65,23 @@ const LeftSidebar = () => {
 
                 <ScrollArea className="h-[calc(100vh-300px)]">
                     <div className="space-y-2">
-                        {/* Render dummy albums */}
                         {isLoading || isFetchingUserPlaylist ? (
                             <PlaylistSkeleton />
+                        ) : !data?.playlists ? (
+                            <div className="flex items-center justify-center min-h-[calc(100vh-300px)]">
+                                <h1 className="text-white text-center">Please login/signup</h1>
+                            </div>
                         ) : (
-                            data?.playlists?.map((playlist) => (
+                            data.playlists.map((playlist) => (
                                 <Link
-                                    href={`/albums/${playlist?.id}`}
+                                    href={`/playlist/${playlist?.id}`}
                                     key={playlist?.id}
                                     className="p-2 hover:bg-zinc-800 rounded-md flex items-center gap-3 group cursor-pointer"
                                 >
                                     <img
                                         src={playlist?.coverImageUrl}
                                         alt="Playlist img"
-                                        className="size-12 rounded-md flex-shrink-0 object-cover"
+                                        className="w-12 h-12 rounded-md object-cover"
                                     />
                                     <div className="flex-1 min-w-0 hidden md:block">
                                         <p className="font-medium truncate">{playlist?.name}</p>

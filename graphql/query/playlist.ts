@@ -11,3 +11,23 @@ query GetUserPlaylists($username: String!) {
   }
 }
 `)
+
+export const getPlaylistSongsQuery = graphql(`
+  #graphql
+  query GetPlaylistSongs($playlistId: String!) {
+    getPlaylistSongs(playlistId: $playlistId) {
+      id
+      title
+      coverImageUrl
+      tracks {
+        id
+        title
+        artist
+        duration
+        audioFileUrl  
+        coverImageUrl
+        hasLiked  
+      }
+    }
+  }
+`);
