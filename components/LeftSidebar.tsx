@@ -3,12 +3,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { HomeIcon, Library, Plus } from "lucide-react";
 import Link from "next/link";
-import PlaylistSkeleton from "./PlaylistSkeleton";
+import {PlaylistSkeleton} from "./PlaylistSkeleton";
 import { useState } from "react";
 import CreateTrackDialog from "./CreateTrackDialog";
+import { useGetUserPlaylists } from "@/hooks/playlist";
+import { useCurrentUser } from "@/hooks/auth";
 
 const LeftSidebar = () => {
     const [songDialogOpen, setSongDialogOpen] = useState(false);
+    const { data: user, isLoading } = useCurrentUser()
+    const { data, isLoading: isFetchingUserPlaylist } = useGetUserPlaylists(user?.getCurrentUser?.username || "")
 
     // Dummy album data
     const albums = [
@@ -91,23 +95,22 @@ const LeftSidebar = () => {
                 <ScrollArea className="h-[calc(100vh-300px)]">
                     <div className="space-y-2">
                         {/* Render dummy albums */}
-                        {true ? (
+                        {isLoading || isFetchingUserPlaylist ? (
                             <PlaylistSkeleton />
                         ) : (
-                            albums.map((album) => (
+                            data?.playlists?.map((playlist) => (
                                 <Link
-                                    href={`/albums/${album._id}`}
-                                    key={album._id}
+                                    href={`/albums/${playlist?.id}`}
+                                    key={playlist?.id}
                                     className="p-2 hover:bg-zinc-800 rounded-md flex items-center gap-3 group cursor-pointer"
                                 >
                                     <img
-                                        src={album.imageUrl}
+                                        src={playlist?.coverImageUrl}
                                         alt="Playlist img"
                                         className="size-12 rounded-md flex-shrink-0 object-cover"
                                     />
                                     <div className="flex-1 min-w-0 hidden md:block">
-                                        <p className="font-medium truncate">{album.title}</p>
-                                        <p className="text-sm text-zinc-400 truncate">Album • {album.artist}</p>
+                                        <p className="font-medium truncate">{playlist?.name}</p>
                                     </div>
                                 </Link>
                             ))

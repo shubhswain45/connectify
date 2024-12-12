@@ -1,4 +1,4 @@
-const PlaylistSkeleton = () => {
+export const PlaylistSkeleton = () => {
 	return Array.from({ length: 7 }).map((_, i) => (
 		<div key={i} className='p-2 rounded-md flex items-center gap-3'>
 			<div className='w-12 h-12 bg-zinc-800 rounded-md flex-shrink-0 animate-pulse' />
@@ -9,4 +9,14 @@ const PlaylistSkeleton = () => {
 		</div>
 	));
 };
-export default PlaylistSkeleton;
+
+export const PlaylistSkeletonTwo = () => {
+	return Array.from({ length: 7 }).map((_, i) => (
+		<div key={i} className='p-2 rounded-md flex items-center gap-3'>
+			
+			<div className='flex-1 min-w-0 hidden md:block space-y-2'>
+				<div className='h-8 w-full bg-zinc-800 rounded animate-pulse' />
+			</div>
+		</div>
+	));
+};

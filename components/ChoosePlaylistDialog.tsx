@@ -11,6 +11,9 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi"; // Importing the search icon
 import CreatePlaylistDialog from "./CreatePlaylistDialog";
+import { useCurrentUser } from "@/hooks/auth";
+import { useAddSongToPlaylist, useGetUserPlaylists } from "@/hooks/playlist";
+import { PlaylistSkeletonTwo } from "./PlaylistSkeleton";
 
 interface CreateTrackDialogProps {
     isOpen: boolean;
@@ -22,6 +25,11 @@ const ChoosePlaylistDialog = ({ isOpen, setIsOpen, trackId }: CreateTrackDialogP
     const [searchQuery, setSearchQuery] = useState<string>("");
 
     const [songDialogOpen, setSongDialogOpen] = useState(false)
+
+    const { data: user, isLoading: isFetchingCurrentUser } = useCurrentUser()
+    const { data, isLoading } = useGetUserPlaylists(user?.getCurrentUser?.username || "")
+
+    const { mutate: addSongToPlaylist, isPending } = useAddSongToPlaylist()
 
     // List of playlists
     const playlists = [
@@ -42,6 +50,13 @@ const ChoosePlaylistDialog = ({ isOpen, setIsOpen, trackId }: CreateTrackDialogP
         playlist.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const handleClick = (playlistId: string) => {
+        addSongToPlaylist({
+            isNewPlaylist: false,
+            existingPlaylistId: playlistId,
+            trackIds: [trackId]
+        })
+    }
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="bg-gradient-to-b from-black to-zinc-900 border-zinc-700 max-h-[150vh] overflow-auto">
@@ -73,22 +88,27 @@ const ChoosePlaylistDialog = ({ isOpen, setIsOpen, trackId }: CreateTrackDialogP
 
                     {/* Playlist Buttons */}
                     <div className="space-y-2 mt-4 max-h-[200px] overflow-y-auto">
-                        {filteredPlaylists.length === 0 ? (
-                            <p className="text-white text-sm">No playlists found</p>
-                        ) : (
-                            filteredPlaylists.map((playlist, index) => (
-                                <Button
-                                    key={index}
-                                    className="w-full text-left bg-zinc-800 text-white py-2 text-sm"
-                                >
-                                    {playlist}
-                                </Button>
-                            ))
-                        )}
+                        {
+                            isLoading || isFetchingCurrentUser ? (
+                                <PlaylistSkeletonTwo />
+                            ) : data?.playlists?.length === 0 ? (
+                                <p className="text-white text-sm">No playlists found</p>
+                            ) : (
+                                data?.playlists?.map((playlist, index) => (
+                                    <Button
+                                        onClick={() => handleClick(playlist.id)}
+                                        key={playlist.id}
+                                        className="w-full text-left bg-zinc-800 text-white py-2 text-sm"
+                                    >
+                                        #{playlist.name}
+                                    </Button>
+                                ))
+                            )
+                        }
                     </div>
                 </div>
                 {
-                    songDialogOpen && <CreatePlaylistDialog songDialogOpen={songDialogOpen} setSongDialogOpen={setSongDialogOpen} trackId={trackId}/>
+                    songDialogOpen && <CreatePlaylistDialog songDialogOpen={songDialogOpen} setSongDialogOpen={setSongDialogOpen} trackId={trackId} />
                 }
             </DialogContent>
         </Dialog>

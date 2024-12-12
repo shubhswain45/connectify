@@ -25,6 +25,7 @@ const documents = {
     "#graphql\n mutation LikeTrack($trackId: String!) {\n  likeTrack(trackId: $trackId)\n}\n": types.LikeTrackDocument,
     "#graphql\n    mutation FollowUser($userId: String!) {\n  followUser(userId: $userId)\n}\n": types.FollowUserDocument,
     "#graphql\n    query GetCurrentUser {\n        getCurrentUser {\n            id\n            profileImageURL\n            email\n            username\n            fullName\n            isVerified\n        }\n    }\n": types.GetCurrentUserDocument,
+    "#graphql\nquery GetUserPlaylists($username: String!) {\n  getUserPlaylists(username: $username) {\n    playlists {\n      id\n      name\n      coverImageUrl\n    }\n  }\n}\n": types.GetUserPlaylistsDocument,
     "#graphql\n    query GetFeedTracks {\n      getFeedTracks {\n          id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n      }\n    }\n    ": types.GetFeedTracksDocument,
     "#graphql\n  query GetTrackById($trackId: String!) {\n  getTrackById(trackId: $trackId) {\n    id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n          hasLiked\n  }\n}\n  ": types.GetTrackByIdDocument,
     "#graphql\nquery GetUserProfile($username: String!) {\n  getUserProfile(username: $username) {\n    id\n        username\n        fullName\n        profileImageURL\n        bio\n        totalTracks\n        totalFollowers\n        totalFollowings\n        followedByMe\n  }\n}\n    ": types.GetUserProfileDocument,
@@ -89,6 +90,10 @@ export function graphql(source: "#graphql\n    mutation FollowUser($userId: Stri
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "#graphql\n    query GetCurrentUser {\n        getCurrentUser {\n            id\n            profileImageURL\n            email\n            username\n            fullName\n            isVerified\n        }\n    }\n"): (typeof documents)["#graphql\n    query GetCurrentUser {\n        getCurrentUser {\n            id\n            profileImageURL\n            email\n            username\n            fullName\n            isVerified\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "#graphql\nquery GetUserPlaylists($username: String!) {\n  getUserPlaylists(username: $username) {\n    playlists {\n      id\n      name\n      coverImageUrl\n    }\n  }\n}\n"): (typeof documents)["#graphql\nquery GetUserPlaylists($username: String!) {\n  getUserPlaylists(username: $username) {\n    playlists {\n      id\n      name\n      coverImageUrl\n    }\n  }\n}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

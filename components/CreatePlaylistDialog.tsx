@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Visibility } from "@/gql/graphql";
-import { useAddSongToPlaylist } from "@/hooks/playlist";
+import { useCurrentUser } from "@/hooks/auth";
+import { useAddSongToPlaylist, useGetUserPlaylists } from "@/hooks/playlist";
 import { useCreateTrack } from "@/hooks/track";
 import usePreviewFile from "@/hooks/usePrevFile";
 import { Upload } from "lucide-react";
@@ -31,6 +32,10 @@ const CreatePlaylistDialog = ({ songDialogOpen, setSongDialogOpen, trackId }: Cr
     const { handleFileChange: handleImgChange, fileURL: imgUrl } = usePreviewFile("image");
     const { handleFileChange: handleAudioChange, fileURL: audioUrl } = usePreviewFile("audio");
     const { mutate: addSongToPlaylist, isPending } = useAddSongToPlaylist();
+
+    const {data:user, isLoading: isFetchingCurrentUser} = useCurrentUser()
+
+    const {data, isLoading} = useGetUserPlaylists(user?.getCurrentUser?.username || "")
 
     const imageInputRef = useRef<HTMLInputElement>(null);
 
