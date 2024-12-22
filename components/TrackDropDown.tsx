@@ -1,5 +1,5 @@
 // components/DropdownMenu.tsx
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { FaHeart, FaPlus, FaShareAlt } from "react-icons/fa";
 import { ListStart } from "lucide-react";
 

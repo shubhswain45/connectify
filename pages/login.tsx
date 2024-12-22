@@ -1,4 +1,4 @@
-import { useCurrentUser, useLoginUser, useVerifyEmail } from '@/hooks/auth';
+import { cuseLoginUser, useVerifyEmail } from '@/hooks/auth';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -13,7 +13,6 @@ interface Input {
 function LoginPage() {
   const { mutateAsync: loginUser, isPending: isLoginSubmitting } = useLoginUser();
   const { mutateAsync: verifyEmail, isPending: isVerifySubmitting } = useVerifyEmail();
-  const { data: user } = useCurrentUser()
   const [email, setEmail] = useState("")
   const [isLoginPage, setIsLoginPage] = useState(true);  // Initially on signup page
 

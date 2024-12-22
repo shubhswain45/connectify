@@ -8,7 +8,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Topbar from "@/components/Topbar";
 import FeaturedSection from "@/components/FeaturedSection";
 import SectionGrid from "@/components/SectionGrid";
-import { useCurrentUser } from "@/hooks/auth";
 import { useState } from "react";
 import CreateTrackDialog from "@/components/CreateTrackDialog";
 import {
@@ -29,7 +28,7 @@ interface HomePageProps {
 
 const HomePage = ({ tracks }: HomePageProps) => {
   const [theme] = useGetCurrentTheme()
-  const { data } = useCurrentUser();
+  // const { data } = useCurrentUser();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const router = useRouter();
   const page = router.query.page ? parseInt(router.query.page as string, 10) : 1;

@@ -1,7 +1,7 @@
 import { useState } from "react"; // Import useState for local state
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Topbar from "@/components/Topbar";
-import { ChevronLeft, ChevronRight, Edit2, Router } from "lucide-react"; // Lucide React icon for edit
+import { ChevronLeft, ChevronRight, Edit2 } from "lucide-react"; // Lucide React icon for edit
 import FeaturedSection from "@/components/FeaturedSection";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { parseCookies } from "nookies"; // Used for parsing cookies
@@ -24,10 +24,18 @@ interface UserPageProps {
 const UserPage = ({ user, userTracks }: UserPageProps) => {
   const [theme] = useGetCurrentTheme()
   const { mutateAsync: followUser, isPending } = useFollowUser()
-  const { data, isLoading } = useCurrentUser()
+  const { data } = useCurrentUser()
   const router = useRouter()
   const page = router.query.page ? parseInt(router.query.page as string, 10) : 1;
 
+
+  const [isFollowed, setIsFollowed] = useState(user?.followedByMe || false);
+
+  const handleFollowToggle = async () => {
+    await followUser(user?.id || "")
+    setIsFollowed(!isFollowed)
+  };
+  
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-240px)] space-y-4">
@@ -37,13 +45,6 @@ const UserPage = ({ user, userTracks }: UserPageProps) => {
       </div>
     );
   }
-
-  const [isFollowed, setIsFollowed] = useState(user.followedByMe);
-
-  const handleFollowToggle = async () => {
-    await followUser(user.id)
-    setIsFollowed(!isFollowed)
-  };
 
   return (
     <main className="rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900">

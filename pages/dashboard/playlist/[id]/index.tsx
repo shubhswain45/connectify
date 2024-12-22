@@ -9,13 +9,6 @@ import { Track } from "@/gql/graphql";
 import { useAudioStore } from "@/store/useAudioStore";
 import { useGetCurrentTheme } from "@/hooks/theme";
 
-// Utility function to format song duration
-function formatDuration(seconds: number) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-}
-
 // Dummy data for album
 const dummyAlbum = {
     title: "We Don't Know",
@@ -61,6 +54,8 @@ const AlbumPage = ({ id, title, coverImageUrl, tracks }: { id: string, title: st
     const [theme] = useGetCurrentTheme()
     const { audioDetails, setAudioDetails } = useAudioStore();
 
+    console.log(id);
+    
     const handleClick = (track: Track) => {
         // If the track ID is different, update the audio details
         const isPlayingCurrentSong = audioDetails.audioFileUrl == track.audioFileUrl && audioDetails.isPlaying
@@ -126,7 +121,7 @@ const AlbumPage = ({ id, title, coverImageUrl, tracks }: { id: string, title: st
                     <div className="">
                         <div className="space-y-2 py-4 -mt-5">
                             {tracks?.map((track, index) => {
-                                const isCurrentSong = true;
+                                // const isCurrentSong = true;
                                 return (
                                     <div
                                         onClick={() => handleClick(track)}

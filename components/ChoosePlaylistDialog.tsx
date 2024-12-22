@@ -3,7 +3,6 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -29,7 +28,7 @@ const ChoosePlaylistDialog = ({ isOpen, setIsOpen, trackId }: CreateTrackDialogP
     const { data: user, isLoading: isFetchingCurrentUser } = useCurrentUser()
     const { data, isLoading } = useGetUserPlaylists(user?.getCurrentUser?.username || "")
 
-    const { mutate: addSongToPlaylist, isPending } = useAddSongToPlaylist()
+    const { mutate: addSongToPlaylist } = useAddSongToPlaylist()
 
     // List of playlists
     const playlists = [
@@ -44,11 +43,6 @@ const ChoosePlaylistDialog = ({ isOpen, setIsOpen, trackId }: CreateTrackDialogP
         "Throwback Tunes",
         "New Releases"
     ];
-
-    // Filter playlists based on the search query
-    const filteredPlaylists = playlists.filter((playlist) =>
-        playlist.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
     const handleClick = (playlistId: string) => {
         addSongToPlaylist({
@@ -94,7 +88,7 @@ const ChoosePlaylistDialog = ({ isOpen, setIsOpen, trackId }: CreateTrackDialogP
                             ) : data?.playlists?.length === 0 ? (
                                 <p className="text-white text-sm">No playlists found</p>
                             ) : (
-                                data?.playlists?.map((playlist, index) => (
+                                data?.playlists?.map((playlist) => (
                                     <Button
                                         onClick={() => handleClick(playlist.id)}
                                         key={playlist.id}

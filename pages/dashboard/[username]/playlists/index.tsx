@@ -6,8 +6,8 @@ import FeaturedSection from "@/components/FeaturedSection";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { parseCookies } from "nookies"; // Used for parsing cookies
 import { createGraphqlClient } from "@/clients/api";
-import { getUserPlaylistsQuery, getUserProfileQuery, getUserTracksQuery } from "@/graphql/query/user";
-import { GetUserProfileResponse, Track, UserPlaylistsResponse } from "@/gql/graphql";
+import { getUserPlaylistsQuery, getUserProfileQuery } from "@/graphql/query/user";
+import { GetUserProfileResponse, UserPlaylistsResponse } from "@/gql/graphql";
 import SectionGrid from "@/components/SectionGrid";
 import { useFollowUser } from "@/hooks/user";
 import { useCurrentUser } from "@/hooks/auth";
@@ -24,9 +24,16 @@ interface UserPageProps {
 const UserPage = ({ user, res }: UserPageProps) => {
     const [theme] = useGetCurrentTheme()
     const { mutateAsync: followUser, isPending } = useFollowUser()
-    const { data, isLoading } = useCurrentUser()
+    const { data } = useCurrentUser()
     const router = useRouter()
     const page = router.query.page ? parseInt(router.query.page as string, 10) : 1;
+
+    const [isFollowed, setIsFollowed] = useState(user?.followedByMe || false);
+    
+    const handleFollowToggle = async () => {
+        await followUser(user?.id || "")
+        setIsFollowed(!isFollowed)
+    };
 
     if (!user) {
         return (
@@ -37,13 +44,6 @@ const UserPage = ({ user, res }: UserPageProps) => {
             </div>
         );
     }
-
-    const [isFollowed, setIsFollowed] = useState(user.followedByMe);
-
-    const handleFollowToggle = async () => {
-        await followUser(user.id)
-        setIsFollowed(!isFollowed)
-    };
 
     return (
         <main className="rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900">
@@ -198,7 +198,6 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
     const { username } = context.params as { username: string };
     const cookies = parseCookies(context); // Parse cookies from the context
     const token = cookies.__connectify_token_from_server; // Get the token
-    const page = context.query.page ? parseInt(context.query.page as string, 10) : 1;
     let user = null;
     let res = null;
 
