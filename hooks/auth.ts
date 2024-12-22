@@ -40,26 +40,7 @@ export const useSignupUser = () => {
             try {
                 const graphQLClient = createGraphqlClient()
                 const { signupUser } = await graphQLClient.request(signupUserMutation, { input: userData });
-
-                if(signupUser){
-                    const res = await fetch("/api/register", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          token: signupUser.token
-                        }),
-                      });
-            
-                      if (!res.ok) {
-                        throw new Error("Failed to set the cookie on the server.");
-                      }
-            
-                      // Return some useful data after success, such as a token if needed
-                      return true
-                }
-
+                return signupUser
             } catch (error: any) {
                 // Throw only the error message for concise output
                 throw new Error(error?.response?.errors?.[0]?.message || "Something went wrong");
@@ -86,7 +67,25 @@ export const useVerifyEmail = () => {
             try {
                 const graphqlClient = createGraphqlClient()
                 const { verifyEmail } = await graphqlClient.request(verifyEmailMutation, { input });
-                return verifyEmail;
+
+                if (verifyEmail) {
+                    const res = await fetch("/api/register", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            token: verifyEmail.token
+                        }),
+                    });
+
+                    if (!res.ok) {
+                        throw new Error("Failed to set the cookie on the server.");
+                    }
+
+                    // Return some useful data after success, such as a token if needed
+                    return verifyEmail
+                }
             } catch (error: any) {
                 // Throw only the error message for concise output
                 throw new Error(error?.response?.errors?.[0]?.message || "Something went wrong");
@@ -122,24 +121,22 @@ export const useLoginUser = () => {
             try {
                 const graphqlClient = createGraphqlClient()
                 const { loginUser } = await graphqlClient.request(loginUserMutation, { input: userData });
-                if(loginUser){
+                if (loginUser.isVerified) {
                     const res = await fetch("/api/register", {
                         method: "POST",
                         headers: {
-                          "Content-Type": "application/json",
+                            "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                          token: loginUser.token
+                            token: loginUser.token
                         }),
-                      });
-            
-                      if (!res.ok) {
+                    });
+
+                    if (!res.ok) {
                         throw new Error("Failed to set the cookie on the server.");
-                      }
-            
-                      // Return some useful data after success, such as a token if needed
-                      return loginUser
+                    }
                 }
+                return loginUser
             } catch (error: any) {
                 // Throw only the error message for concise output
                 throw new Error(error?.response?.errors?.[0]?.message || "Something went wrong");
@@ -153,11 +150,11 @@ export const useLoginUser = () => {
             } else {
                 router.replace("/")
                 toast.success("Login successful!");
-            }
 
-            queryClient.setQueryData(["currentUser"], () => {
-                return { getCurrentUser: data }
-            })
+                queryClient.setQueryData(["currentUser"], () => {
+                    return { getCurrentUser: data }
+                })
+            }            
         },
 
         onError: (error: any) => {
@@ -179,16 +176,16 @@ export const useLogoutUser = () => {
             const res = await fetch("/api/logout", {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                 },
-              });
-    
-              if (!res.ok) {
+            });
+
+            if (!res.ok) {
                 throw new Error("Failed to set the cookie on the server.");
-              }
-    
-              // Return some useful data after success, such as a token if needed
-              return logoutUser
+            }
+
+            // Return some useful data after success, such as a token if needed
+            return logoutUser
         },
 
         onSuccess: (data) => {

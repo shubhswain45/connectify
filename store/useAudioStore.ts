@@ -12,6 +12,7 @@ interface AudioStore {
     audioFileUrl: string;
     audioRef: AudioRefType | null; // Updated here
     isPlaying: boolean;
+    isFavorite: boolean
   };
   setAudioDetails: (audioDetails: Partial<AudioStore['audioDetails']>) => void;
   togglePlay: () => void;
@@ -27,6 +28,7 @@ export const useAudioStore = create<AudioStore>((set) => ({
     audioFileUrl: '',
     audioRef: null,
     isPlaying: false,
+    isFavorite: false
   },
   setAudioDetails: (audioDetails) =>
     set((state) => ({

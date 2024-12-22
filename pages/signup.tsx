@@ -27,7 +27,7 @@ function Signup() {
   // Handle form submission for signup
   const handleSignupUser = async (data: Input) => {
     try {
-      const signupResponse = await signupUser(data);  // Attempt signup
+      const signupResponse = await signupUser({ username: data.username.replace(/\s/g, ""), fullName: data.fullName, email: data.email, password: data.password });  // Attempt signup
 
       if (signupResponse) {
         // If signup is successful, toggle to the Verify Email page
@@ -46,10 +46,10 @@ function Signup() {
 
   // Show the Signup Form or the Verify Email page
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#242424] to-[#080808] flex flex-col justify-start items-center text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-[#242424] to-[#080808] flex flex-col justify-center items-center text-white overflow-hidden">
       {isSignupPage ? (
         // Signup Page
-        <div className="bg-[#121112] rounded-lg shadow-lg w-full max-w-md p-9 mt-3">
+        <div className="bg-[#121112] rounded-lg shadow-lg w-full max-w-md p-9">
           <h2 className="text-2xl font-semibold mb-6 text-center">Signup to Connectify</h2>
 
           {/* Signup Form */}

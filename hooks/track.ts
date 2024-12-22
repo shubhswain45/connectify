@@ -51,22 +51,16 @@ export const useLikeTrack = () => {
 
     return useMutation({
         mutationFn: async (trackId: string) => {
-            if (!trackId) {
-                toast.error("trackId is require");
-            }
-
             try {
                 const graphqlClient = createGraphqlClient();
-                const { likeTrack } = await graphqlClient.request(likeTrackMutation, {trackId});
+                const { likeTrack } = await graphqlClient.request(likeTrackMutation, { trackId });
                 return likeTrack;
             } catch (error: any) {
-                throw new Error(
-                    error?.response?.errors?.[0]?.message || "Something went wrong"
-                );
+                throw new Error(error?.response?.errors?.[0]?.message || "Something went wrong");
             }
         },
         onError: (error: any) => {
-            const errorMessage = error.message.split(":").pop()?.trim() || "Something went wrong";
+            const errorMessage = error.message.split(':').pop()?.trim() || "Something went wrong";
             toast.error(errorMessage);
         },
     });

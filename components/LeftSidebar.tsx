@@ -1,7 +1,7 @@
 import { buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { HomeIcon, Library, Plus } from "lucide-react";
+import { HomeIcon, Library, LoaderPinwheel, Plus } from "lucide-react";
 import Link from "next/link";
 import { PlaylistSkeleton } from "./PlaylistSkeleton";
 import { useState } from "react";
@@ -33,7 +33,6 @@ const LeftSidebar = () => {
                     </Link>
 
                     <div
-                        onClick={() => setSongDialogOpen(true)}
                         className={cn(
                             buttonVariants({
                                 variant: "ghost",
@@ -41,8 +40,8 @@ const LeftSidebar = () => {
                             })
                         )}
                     >
-                        <Plus className="mr-2 size-5" />
-                        <span className="hidden md:inline">Create</span>
+                         <LoaderPinwheel className="mr-2 size-5" />
+                        <span className="hidden md:inline">Explore</span>
                     </div>
                 </div>
             </div>
@@ -68,13 +67,13 @@ const LeftSidebar = () => {
                         {isLoading || isFetchingUserPlaylist ? (
                             <PlaylistSkeleton />
                         ) : !data?.playlists ? (
-                            <div className="flex items-center justify-center min-h-[calc(100vh-300px)]">
+                            <div className="flex items-center justify-center h-full">
                                 <h1 className="text-white text-center">Please login/signup</h1>
                             </div>
                         ) : (
                             data.playlists.map((playlist) => (
                                 <Link
-                                    href={`/playlist/${playlist?.id}`}
+                                    href={`dashboard/playlist/${playlist?.id}`}
                                     key={playlist?.id}
                                     className="p-2 hover:bg-zinc-800 rounded-md flex items-center gap-3 group cursor-pointer"
                                 >
@@ -100,3 +99,5 @@ const LeftSidebar = () => {
 };
 
 export default LeftSidebar;
+
+//http://localhost:3000/dashoard/playlist/848316af-ffbd-4fb8-a001-86540377404f

@@ -3,10 +3,7 @@ import { graphql } from "@/gql";
 export const signupUserMutation = graphql(`
   #graphql
   mutation SignupUser($input: SignupUserInput!) {
-    signupUser(input: $input) {
-      email
-      token
-    }
+    signupUser(input: $input)
   }
 `);
 
@@ -20,6 +17,7 @@ export const verifyEmailMutation = graphql(`
       username
       fullName
       isVerified
+      token
     }
   }
 `);

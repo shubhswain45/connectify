@@ -14,7 +14,7 @@ function LoginPage() {
   const { mutateAsync: loginUser, isPending: isLoginSubmitting } = useLoginUser();
   const { mutateAsync: verifyEmail, isPending: isVerifySubmitting } = useVerifyEmail();
   const { data: user } = useCurrentUser()
-
+  const [email, setEmail] = useState("")
   const [isLoginPage, setIsLoginPage] = useState(true);  // Initially on signup page
 
   // Set up React Hook Form
@@ -31,6 +31,7 @@ function LoginPage() {
       if (!loginResponse?.isVerified) {
         // If signup is successful, toggle to the Verify Email page
         setIsLoginPage(false);
+        setEmail(loginResponse.email)
       }
     } catch (error) {
       console.log(error);
@@ -40,15 +41,15 @@ function LoginPage() {
 
   // Handle email verification form submission
   const handleVerifyEmail = async (data: Input) => {
-    await verifyEmail({ code: data.verificationCode, email: user?.getCurrentUser?.email || "" })
+    await verifyEmail({ code: data.verificationCode, email })
   };
 
   // Show the Signup Form or the Verify Email page
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#242424] to-[#080808] flex flex-col justify-start items-center text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-[#242424] to-[#080808] flex flex-col items-center justify-center text-white overflow-hidden">
       {isLoginPage ? (
         // Signup Page
-        <div className="bg-[#121112] rounded-lg shadow-lg w-full max-w-md p-9 mt-3">
+        <div className="bg-[#121112] rounded-lg shadow-lg w-full max-w-md p-9">
           <h2 className="text-2xl font-semibold mb-6 text-center">Signup to Connectify</h2>
 
           {/* Signup Form */}

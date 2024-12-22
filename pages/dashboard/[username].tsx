@@ -1,7 +1,7 @@
 import { useState } from "react"; // Import useState for local state
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Topbar from "@/components/Topbar";
-import { Edit2 } from "lucide-react"; // Lucide React icon for edit
+import { ChevronLeft, ChevronRight, Edit2, Router } from "lucide-react"; // Lucide React icon for edit
 import FeaturedSection from "@/components/FeaturedSection";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { parseCookies } from "nookies"; // Used for parsing cookies
@@ -11,6 +11,10 @@ import { GetUserProfileResponse, Track } from "@/gql/graphql";
 import SectionGrid from "@/components/SectionGrid";
 import { useFollowUser } from "@/hooks/user";
 import { useCurrentUser } from "@/hooks/auth";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink } from "@/components/ui/pagination";
+import { useRouter } from "next/router";
+import { useGetCurrentTheme } from "@/hooks/theme";
+import UserHeader from "@/components/UserHeader";
 
 interface UserPageProps {
   user: GetUserProfileResponse | null;
@@ -18,8 +22,11 @@ interface UserPageProps {
 }
 
 const UserPage = ({ user, userTracks }: UserPageProps) => {
+  const [theme] = useGetCurrentTheme()
   const { mutateAsync: followUser, isPending } = useFollowUser()
   const { data, isLoading } = useCurrentUser()
+  const router = useRouter()
+  const page = router.query.page ? parseInt(router.query.page as string, 10) : 1;
 
   if (!user) {
     return (
@@ -112,6 +119,8 @@ const UserPage = ({ user, userTracks }: UserPageProps) => {
             }
           </div>
 
+          <UserHeader />
+
           {/* Featured Songs Section */}
           <FeaturedSection />
 
@@ -125,7 +134,61 @@ const UserPage = ({ user, userTracks }: UserPageProps) => {
               <SectionGrid tracks={userTracks} />
             </div>
           )}
+
+          {
+            userTracks && (
+
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationLink
+                      aria-label="Previous Page"
+                      className="hover:bg-zinc-700 text-zinc-300 cursor-pointer"
+                      onClick={() => router.push(`/dashboard/${user.username}/?page=${Math.max(1, page - 1)}`)}
+                    >
+                      <ChevronLeft />
+                    </PaginationLink>
+
+                  </PaginationItem>
+
+                  {[page, page + 1, page + 2].map((p, index) => (
+                    p > 0 && (
+                      <PaginationItem key={index}>
+                        <PaginationLink
+                          onClick={() => {
+                            if (p === page) {
+                              return;
+                            }
+                            router.push(`/dashboard/${user.username}/?page=${p}`);
+                          }}
+                          className={p === page ? "text-white hover:text-white" : "hover:bg-zinc-700 text-zinc-300 cursor-pointer"}
+                          style={p === page ? { backgroundColor: theme as string } : {}}
+                        >
+
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  ))}
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink
+                      onClick={() => router.push(`/dashboard/${user.username}/?page=${page + 1}`)}
+                      className="hover:bg-zinc-700 text-zinc-300 cursor-pointer"
+                    >
+                      <ChevronRight />
+                    </PaginationLink>
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )
+          }
         </div>
+
+
+
       </ScrollArea>
     </main>
   );
@@ -136,13 +199,14 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
   const { username } = context.params as { username: string };
   const cookies = parseCookies(context); // Parse cookies from the context
   const token = cookies.__connectify_token_from_server; // Get the token
+  const page = context.query.page ? parseInt(context.query.page as string, 10) : 1;
   let user = null;
   let userTracks = null;
 
   const graphqlClient = createGraphqlClient(token);
   const { getUserProfile } = await graphqlClient.request(getUserProfileQuery, { username });
   if (getUserProfile) {
-    const { getUserTracks } = await graphqlClient.request(getUserTracksQuery, { username });
+    const { getUserTracks } = await graphqlClient.request(getUserTracksQuery, { payload: { username, page } });
     user = getUserProfile;
     userTracks = getUserTracks;
   }

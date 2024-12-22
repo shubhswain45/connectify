@@ -1,6 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Play } from "lucide-react"; // Lucide React icon for edit
-import MainLayout from "@/layout/MainLayout";
 import Topbar from "@/components/Topbar";
 
 // Dummy data for album

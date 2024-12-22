@@ -1,14 +1,13 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Play } from "lucide-react"; // Lucide React icon for edit
-import MainLayout from "@/layout/MainLayout";
 import Topbar from "@/components/Topbar";
-import PlayButton from "@/components/PlayButton";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { createGraphqlClient } from "@/clients/api";
 import { getPlaylistSongsQuery } from "@/graphql/query/playlist";
 import { Track } from "@/gql/graphql";
 import { useAudioStore } from "@/store/useAudioStore";
+import { useGetCurrentTheme } from "@/hooks/theme";
 
 // Utility function to format song duration
 function formatDuration(seconds: number) {
@@ -59,6 +58,7 @@ function truncateText(text: string, maxLength: number): string {
 
 
 const AlbumPage = ({ id, title, coverImageUrl, tracks }: { id: string, title: string, coverImageUrl: string, tracks: Track[] | null }) => {
+    const [theme] = useGetCurrentTheme()
     const { audioDetails, setAudioDetails } = useAudioStore();
 
     const handleClick = (track: Track) => {
@@ -106,8 +106,9 @@ const AlbumPage = ({ id, title, coverImageUrl, tracks }: { id: string, title: st
                         <img
                             src={coverImageUrl}
                             alt={"Playlist url"}
-                            className="w-[240px] h-[240px] shadow-xl rounded"
+                            className="w-[240px] h-[240px] shadow-xl rounded object-cover"
                         />
+
                         <div className="flex flex-col justify-center">
                             {/* Album Title and Artist */}
                             <h2 className="text-3xl font-semibold text-white">{title}</h2>
@@ -123,7 +124,7 @@ const AlbumPage = ({ id, title, coverImageUrl, tracks }: { id: string, title: st
 
                     {/* Song List Section */}
                     <div className="">
-                        <div className="space-y-2 py-4">
+                        <div className="space-y-2 py-4 -mt-5">
                             {tracks?.map((track, index) => {
                                 const isCurrentSong = true;
                                 return (
@@ -135,7 +136,7 @@ const AlbumPage = ({ id, title, coverImageUrl, tracks }: { id: string, title: st
                                     >
                                         <div className="flex items-center justify-center">
                                             {audioDetails.audioFileUrl == track.audioFileUrl && audioDetails.isPlaying ? (
-                                                <div className="size-4 text-green-500">♫</div>
+                                                <div className="size-4" style={{color: theme as string}}>♫</div>
                                             ) : (
                                                 <span className="group-hover:hidden">{index + 1}</span>
                                             )}
@@ -180,23 +181,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const cookies = parseCookies(context);  // Parse cookies from the context
     const token = cookies.__connectify_token_from_server;  // Get the token
 
-    console.log("token", token);
-
-    let res = null;
-
-    if (token) {
-        // If the token exists, consider the user as logged in
-        const graphqlClient = createGraphqlClient(token);
-        const { getPlaylistSongs } = await graphqlClient.request(getPlaylistSongsQuery, { playlistId: id });
-        res = getPlaylistSongs;
-    }
+    // If the token exists, consider the user as logged in
+    const graphqlClient = createGraphqlClient(token);
+    const { getPlaylistSongs } = await graphqlClient.request(getPlaylistSongsQuery, { playlistId: id });
 
     return {
         props: {
-            id: res?.id,
-            title: res?.title,
-            coverImageUrl: res?.coverImageUrl,
-            tracks: res?.tracks,
+            id: getPlaylistSongs.id || "",
+            title: getPlaylistSongs.title || "",
+            coverImageUrl: getPlaylistSongs.coverImageUrl || "",
+            tracks: getPlaylistSongs.tracks,
         },
     };
 };

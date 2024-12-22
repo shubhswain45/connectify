@@ -20,10 +20,11 @@ import { parseCookies } from "nookies";
 import { useLikeTrack } from "@/hooks/track";
 import { useAudioStore } from "@/store/useAudioStore";
 import { GetServerSidePropsContext } from "next";
-import CreateTrackDialog from "@/components/CreateTrackDialog";
 import ChoosePlaylistDialog from "@/components/ChoosePlaylistDialog";
+import { useGetCurrentTheme } from "@/hooks/theme";
 
 const AudioDetailPage = ({ track }: { track: Track | null }) => {
+    const [theme] = useGetCurrentTheme()
     const [isFavorite, setIsFavorite] = useState(track?.hasLiked);
     const { audioDetails, setAudioDetails } = useAudioStore();
     const [currentTime, setCurrentTime] = useState(0);
@@ -215,7 +216,7 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
                             />
                             <button
                                 onClick={handleLike}
-                                className="absolute -top-9 right-0 text-red-500 hover:text-red-600"
+                                className="absolute -top-9 right-0"
                                 aria-label="Toggle Favorite"
                             >
                                 {isPending ? (
@@ -223,9 +224,14 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
                                         <div className="w-4 h-4 border-2 border-t-transparent border-white animate-spin rounded-full"></div>
                                     </div>
                                 ) : isFavorite ? (
-                                    <FaHeart className="text-red-500" size={20} />
+                                    <FaHeart
+                                        size={20}
+                                        style={{ color: theme as string }}
+                                    />
                                 ) : (
-                                    <Heart size={20} />
+                                    <Heart size={20}
+                                        style={{ color: theme as string }}
+                                    />
                                 )}
                             </button>
                             <button
@@ -266,7 +272,7 @@ const AudioDetailPage = ({ track }: { track: Track | null }) => {
                 </div>
 
                 {isOpen && (
-                    <ChoosePlaylistDialog isOpen={isOpen} setIsOpen={setIsOpen} trackId={track?.id || ""}/>
+                    <ChoosePlaylistDialog isOpen={isOpen} setIsOpen={setIsOpen} trackId={track?.id || ""} />
                 )}
             </ScrollArea>
         </main>
@@ -278,16 +284,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const cookies = parseCookies(context);
     const token = cookies.__connectify_token_from_server;
 
-    let track = null;
-
-    if (token) {
-        const graphqlClient = createGraphqlClient(token);
-        const { getTrackById } = await graphqlClient.request(getTrackByIdQuery, { trackId });
-        track = getTrackById;
-    }
+    const graphqlClient = createGraphqlClient(token);
+    const { getTrackById } = await graphqlClient.request(getTrackByIdQuery, { trackId });
 
     return {
-        props: { track },
+        props: { track: getTrackById },
     };
 }
 

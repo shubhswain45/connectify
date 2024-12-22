@@ -1,6 +1,11 @@
+import { useGetCurrentTheme } from "@/hooks/theme";
+
 const DummyControls = () => {
+    const [theme] = useGetCurrentTheme()
     return (
-        <footer className="h-20 sm:h-24 bg-gradient-to-r from-green-400 via-green-500 to-green-600 flex items-center justify-center">
+        <footer className="h-20 sm:h-24 flex items-center justify-center"
+        style={{backgroundColor: theme as string}}
+        >
             <p className="text-white text-sm sm:text-lg font-semibold">
                 🎵 Immerse yourself in the rhythm of life. Enjoy the music! 🎶
             </p>

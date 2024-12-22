@@ -17,16 +17,29 @@ query GetUserProfile($username: String!) {
     `)
 
 export const getUserTracksQuery = graphql(`#graphql
-    query GetUserTracks($username: String!) {
-  getUserTracks(username: $username) {
-  id                  
-  title           
-  artist            
-  coverImageUrl     
-  audioFileUrl     
-  createdAt       
-  updatedAt        
-  hasLiked 
+  query GetUserTracks($payload: GetUserTracksPayload!) {
+  getUserTracks(payload: $payload) {
+    
+id                  
+title           
+artist            
+coverImageUrl     
+audioFileUrl     
+createdAt       
+updatedAt        
+hasLiked 
+  }
+}
+        `)
+
+export const getUserPlaylistsQuery = graphql(`#graphql
+query GetUserPlaylists($userId: String!) {
+  getUserPlaylists(userId: $userId) {
+    playlists {
+      id
+      name
+      coverImageUrl
+    }
   }
 }
         `)

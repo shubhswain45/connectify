@@ -1,32 +1,40 @@
 import Link from "next/link";
 import { useCurrentUser, useLogoutUser } from "@/hooks/auth";
 import Image from "next/image";
+import { useGetCurrentTheme } from "@/hooks/theme";
 
 const Topbar = () => {
+  const [theme] = useGetCurrentTheme()
   const { data, isLoading } = useCurrentUser();
   const { mutate: logoutUser } = useLogoutUser();
-
-  console.log("user---", data);
 
   return (
     <div className="flex items-center justify-between p-4 sticky top-0 bg-zinc-900/75 backdrop-blur-md z-10">
       {/* Logo Section */}
-      <div className="flex items-center text-green-500 hover:text-green-400 font-bold cursor-pointer">
-        Connectify
-      </div>
+      <Link href={"/dashboard"}>
+        <div className="flex items-center font-bold cursor-pointer"
+          style={{ color: theme as string }}
+        >
+          Connectify
+        </div>
+      </Link>
 
       {/* Right Section */}
       <div className="flex items-center gap-4">
         {/* Sign-In Buttons (Hardcoded Example) */}
         {isLoading ? (
-          <button className="bg-blue-500 text-white px-4 py-2 rounded w-20 h-7"></button>
+          <button className={`text-white px-4 py-2 rounded w-20 h-7`}></button>
         ) : data?.getCurrentUser && data?.getCurrentUser.isVerified ? (
-          <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => logoutUser()}>
+          <button className={`text-white px-4 py-2 rounded`} onClick={() => logoutUser()}
+            style={{ backgroundColor: theme as string }}
+          >
             Logout
           </button>
         ) : (
           <Link href={"/login"}>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded">
+            <button className={`bg-[${theme}] text-white px-4 py-2 rounded`}
+              style={{ backgroundColor: theme as string }}
+            >
               Log In
             </button>
           </Link>
@@ -34,7 +42,7 @@ const Topbar = () => {
 
         {/* User Button Placeholder */}
         {!isLoading && data?.getCurrentUser && data.getCurrentUser.isVerified && (
-          <Link href={`/${data.getCurrentUser.username}`}>
+          <Link href={`/dashboard/${data.getCurrentUser.username}`}>
             <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
               <Image
                 src={data.getCurrentUser.profileImageURL || "https://toppng.com/uploads/preview/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png"}

@@ -1,8 +1,8 @@
 import { graphql } from "@/gql";
 
-export const getUserPlaylistsQuery = graphql(`#graphql
-query GetUserPlaylists($username: String!) {
-  getUserPlaylists(username: $username) {
+export const getCurrentUserPlaylistsQuery = graphql(`#graphql
+query GetCurrentUserPlaylists($username: String!) {
+  getCurrentUserPlaylists(username: $username) {
     playlists {
       id
       name
@@ -30,4 +30,23 @@ export const getPlaylistSongsQuery = graphql(`
       }
     }
   }
+`);
+
+export const getFeedPlaylistsQuery = graphql(`
+  #graphql
+  query GetFeedPlaylists {
+  getFeedPlaylists {
+    playlists {
+      id
+      name
+      coverImageUrl
+      totalTracks
+      author {
+        id
+        username
+        profileImageURL
+      }
+    }
+  }
+}
 `);

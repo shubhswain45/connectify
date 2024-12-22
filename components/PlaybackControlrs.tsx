@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { useCurrentUser } from "@/hooks/auth";
+import { useGetCurrentTheme } from "@/hooks/theme";
+import { useLikeTrack } from "@/hooks/track";
 import { useAudioStore } from "@/store/useAudioStore";
 import {
+  Heart,
   Laptop2,
   ListMusic,
   Mic2,
@@ -14,6 +18,8 @@ import {
   Volume1,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { FaHeart } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -22,13 +28,29 @@ const formatTime = (seconds: number) => {
 };
 
 export const PlaybackControls = () => {
+  const [theme] = useGetCurrentTheme()
   const [volume, setVolume] = useState(75);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const { audioDetails, setAudioDetails, togglePlay } = useAudioStore();
+  const { mutateAsync: likeTrack, isPending } = useLikeTrack()
+
+  const { data, isLoading } = useCurrentUser()
+
+  const [isFavorite, setIsFavorite] = useState(audioDetails.isFavorite)
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const { audioDetails, setAudioDetails, togglePlay } = useAudioStore();
-  
+  const handleLike = async () => {
+    if(!isLoading && !data?.getCurrentUser) {
+      toast.error("Please Login/Signup first")
+      return
+    }
+    await likeTrack(audioDetails.id)
+    setIsFavorite(!isFavorite)
+  }
+
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -101,6 +123,21 @@ export const PlaybackControls = () => {
             </>
           )}
         </div>
+
+        <button
+          onClick={handleLike}
+          aria-label="Toggle Favorite"
+        >
+          {isPending ? (
+            <div className="flex items-center justify-center">
+              <div className="w-4 h-4 border-2 border-t-transparent border-white animate-spin rounded-full"></div>
+            </div>
+          ) : isFavorite ? (
+            <FaHeart style={{color: theme as string}} size={20} />
+          ) : (
+            <Heart size={20} style={{color: theme as string}}/>
+          )}
+        </button>
 
         {/* Player controls */}
         <div className="flex flex-col items-center gap-2 flex-1 max-w-full sm:max-w-[45%]">

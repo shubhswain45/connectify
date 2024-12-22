@@ -25,7 +25,7 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
   }, []);
 
   // Check if the current route is `/show/[trackId]` or any path starting with `/show`
-  const isShowPage = router.pathname.startsWith('/show');
+  const isShowPage = router.pathname.startsWith('/dashboard/show');
 
   return (
     <div className={`h-screen bg-black text-white flex flex-col ${className || ""}`}>
