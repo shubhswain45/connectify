@@ -1,4 +1,4 @@
-import { cuseLoginUser, useVerifyEmail } from '@/hooks/auth';
+import { useLoginUser, useVerifyEmail } from '@/hooks/auth';
 import { Loader } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';

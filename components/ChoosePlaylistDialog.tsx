@@ -30,20 +30,6 @@ const ChoosePlaylistDialog = ({ isOpen, setIsOpen, trackId }: CreateTrackDialogP
 
     const { mutate: addSongToPlaylist } = useAddSongToPlaylist()
 
-    // List of playlists
-    const playlists = [
-        "My Favorite Songs",
-        "Chill Vibes",
-        "Workout Mix",
-        "Pop Hits",
-        "Rock Classics",
-        "Indie Discoveries",
-        "Top 40",
-        "Summer Jams",
-        "Throwback Tunes",
-        "New Releases"
-    ];
-
     const handleClick = (playlistId: string) => {
         addSongToPlaylist({
             isNewPlaylist: false,
