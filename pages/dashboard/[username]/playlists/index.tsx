@@ -5,12 +5,10 @@ import { createGraphqlClient } from "@/clients/api";
 import { getUserPlaylistsQuery, getUserProfileQuery } from "@/graphql/query/user";
 import { GetUserProfileResponse, UserPlaylistsResponse } from "@/gql/graphql";
 import SectionGrid from "@/components/_dashboard/_home/SectionGrid";
-import { useRouter } from "next/router";
 import UserHeader from "@/components/_dashboard/_user/UserHeader";
 import DashboardLayout from "@/layout/DashboardLayout";
 import PaginationController from "@/components/_dashboard/PaginationController";
 import UserProfileHeader from "@/components/_dashboard/_user/UserProfileHeader";
-import { useCurrentUser } from "@/hooks/auth";
 
 interface UserPageProps {
     user: GetUserProfileResponse | null;
@@ -18,9 +16,6 @@ interface UserPageProps {
 }
 
 const UserPage = ({ user, res }: UserPageProps) => {
-    const { data } = useCurrentUser()
-    const router = useRouter()
-    const page = router.query.page ? parseInt(router.query.page as string, 10) : 1;
 
     const [isFollowed, setIsFollowed] = useState(user?.followedByMe || false);
 

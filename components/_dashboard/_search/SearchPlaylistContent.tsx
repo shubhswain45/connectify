@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { SearchContentSkeleton } from '../../Skeletons';
 import { useSearchPlaylist } from '@/hooks/playlist';
 
+
 interface SearchData {
     searchQuery: string;
     page: number;
@@ -18,7 +19,7 @@ const SearchPlaylistContent: React.FC<SearchContentProps> = ({ searchData, setSe
 
     const [hasMore, setHasMore] = useState(true); // Tracks if there are more tracks to load
     const [allPlaylists, setAllPlaylists] = useState<any[]>([]); // State to hold all accumulated tracks
-    const { data, isLoading, error } = useSearchPlaylist(searchData.searchQuery, searchData.page); // Fetch 10 tracks per page
+    const { data, isLoading } = useSearchPlaylist(searchData.searchQuery, searchData.page); // Fetch 10 tracks per page
     const router = useRouter();
     const [prevQuery, setPrevQuery] = useState("")
 
@@ -81,10 +82,6 @@ const SearchPlaylistContent: React.FC<SearchContentProps> = ({ searchData, setSe
                 </h2>
             </div>
         );
-    }
-
-    if (error) {
-        return <div>Error: {error.message}</div>;
     }
 
     return (

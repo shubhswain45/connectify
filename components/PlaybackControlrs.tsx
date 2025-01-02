@@ -144,6 +144,8 @@ export const PlaybackControls = () => {
     const currentPath = router.pathname; // Gets the current path definition
     const currentRoute = router.asPath; // Gets the actual route with dynamic values
 
+    console.log(currentRoute);
+    
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
 
@@ -303,6 +305,13 @@ export const PlaybackControls = () => {
     toast.success(audioDetails.repeatable ? 'Track removed from queue' : 'Track added to queue');
   };
 
+  const handlePrev = () => {
+    handleNextPrevSong("prev")
+  }
+
+  const handleNext = () => {
+    handleNextPrevSong("prev")
+  }
   return (
     <footer className="h-20 sm:h-24 bg-[#1f1f1f] px-4">
       <div className="flex justify-between items-center h-full max-w-[1800px] mx-auto">
@@ -360,7 +369,7 @@ export const PlaybackControls = () => {
             <MdSkipPrevious
               size={30}
               className={`hover:bg-transparent hover:${playlistDetails.hasPrev ? "text-white" : "text-zinc-600"} ${playlistDetails.hasPrev ? "text-white cursor-pointer" : "text-zinc-600"}  transition-transform duration-300 ease-in-out transform ${playlistDetails.hasPrev && "hover:scale-110"}`}
-              onClick={() => handleNextPrevSong("prev")}
+              onClick={handlePrev}
             />
 
             <Button
@@ -379,7 +388,7 @@ export const PlaybackControls = () => {
             <MdSkipNext
               size={30}
               className={`hover:bg-transparent hover:${playlistDetails.hasNext ? "text-white" : "text-zinc-600"} ${playlistDetails.hasNext ? "text-white cursor-pointer" : "text-zinc-600"}  transition-transform duration-300 ease-in-out transform ${playlistDetails.hasNext && "hover:scale-110"}`}
-              onClick={() => handleNextPrevSong("next")}
+              onClick={handleNext}
             />
 
             <button

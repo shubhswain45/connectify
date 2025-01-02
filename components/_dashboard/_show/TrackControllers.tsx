@@ -20,16 +20,15 @@ interface TrackControllersProps {
 }
 
 const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, setIsFavorite, playbackSpeed, setPlaybackSpeed }) => {
-    const [theme] = useGetCurrentTheme()
+    const [theme] = useGetCurrentTheme();
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const { audioDetails, setAudioDetails, togglePlay } = useAudioStore()
+    const { audioDetails, setAudioDetails, togglePlay } = useAudioStore();
     const { mutateAsync: likeTrack, isPending } = useLikeTrack();
-    const { isTrackRepeatable, markTrackAsRepeatable, unmarkTrackAsRepeatable } = useRepeatableTracksStore()
-    const { addSongToQueue, isTrackInQueue, removeTrackById } = useQueueStore()
+    const { isTrackRepeatable, markTrackAsRepeatable, unmarkTrackAsRepeatable } = useRepeatableTracksStore();
+    const { addSongToQueue, isTrackInQueue, removeTrackById } = useQueueStore();
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
-
 
     const togglePlaybackSpeed = () => {
         const nextSpeed = playbackSpeed === 1 ? 1.5 : playbackSpeed === 1.5 ? 2 : 1;
@@ -50,25 +49,24 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
     };
 
     const handleClick = () => {
-        togglePlay()
+        togglePlay();
     };
 
     const skipForward = () => {
         if (audioRef.current) {
-            audioRef.current.currentTime = audioRef.current.currentTime + 10,
-                setCurrentTime(audioRef.current.currentTime);
+            audioRef.current.currentTime = audioRef.current.currentTime + 10;
+            setCurrentTime(audioRef.current.currentTime);
         }
     };
 
     const skipBackward = () => {
         if (audioRef.current) {
-            audioRef.current.currentTime = audioRef.current.currentTime - 10,
-                setCurrentTime(audioRef.current.currentTime);
+            audioRef.current.currentTime = audioRef.current.currentTime - 10;
+            setCurrentTime(audioRef.current.currentTime);
         }
     };
 
     const handleRepeat = () => {
-        // Guard clause for missing track
         if (!track) {
             toast.error('No track available');
             return;
@@ -80,23 +78,19 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
             markTrackAsRepeatable(track.id);
         }
 
-        // Update UI state
         setAudioDetails({ repeatable: !audioDetails.repeatable });
-    }
+    };
 
     const handleQueueOperation = () => {
-        // Guard clause for missing track
         if (!audioDetails) {
             toast.error('No track available');
             return;
         }
 
         if (audioDetails.isQueued) {
-            // Remove track from queue
             removeTrackById(audioDetails.id);
-            setAudioDetails({ isQueued: false })
+            setAudioDetails({ isQueued: false });
         } else {
-            // Add track to queue
             addSongToQueue({
                 id: audioDetails.id,
                 artist: audioDetails.artist,
@@ -106,9 +100,8 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
                 coverImageUrl: audioDetails.coverImageUrl,
                 duration: audioDetails.duration
             });
-            setAudioDetails({ isQueued: true })
+            setAudioDetails({ isQueued: true });
         }
-
 
         toast.success(audioDetails.repeatable ? 'Track removed from queue' : 'Track added to queue');
     };
@@ -117,7 +110,7 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
         if (audioRef.current) {
             audioRef.current.playbackRate = playbackSpeed;
         }
-    }, [playbackSpeed])
+    }, [playbackSpeed]);
 
     useEffect(() => {
         const handlePlay = async () => {
@@ -125,28 +118,23 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
             if (!audio || !audioDetails.audioFileUrl) return;
 
             if (audioDetails.isPlaying && audio.paused) {
-                console.log("loloooooooooooo");
-
                 try {
                     await audio.play();
                 } catch (error) {
                     console.log(error);
-
-                    setAudioDetails({ isPlaying: false })
-
+                    setAudioDetails({ isPlaying: false });
                 }
             } else if (!audioDetails.isPlaying && !audio.paused) {
                 audio.pause();
             }
-        }
+        };
 
-        handlePlay()
-    }, [audioDetails.audioFileUrl, audioDetails.isPlaying, setAudioDetails]);
+        handlePlay();
+    }, [audioDetails, setAudioDetails]);
 
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
-        console.log("pls.......", audioDetails.repeatable);
 
         const updateTime = () => setCurrentTime(audio.currentTime);
         const updateDuration = () => setDuration(audio.duration);
@@ -156,8 +144,8 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
 
         const handleEnded = () => {
             if (audioDetails.repeatable) {
-                audio.play()
-                return
+                audio.play();
+                return;
             }
             setAudioDetails({ isPlaying: false });
         };
@@ -186,8 +174,8 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
             repeatable: isTrackRepeatable(track.id),
             isQueued: isTrackInQueue(track.id)
         });
-    }, []);
-
+    }, [track, isTrackRepeatable, isTrackInQueue, setAudioDetails]);
+    
     return (
         <>
             <div className="w-72 relative">

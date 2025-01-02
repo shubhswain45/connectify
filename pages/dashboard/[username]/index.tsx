@@ -5,7 +5,6 @@ import { createGraphqlClient } from "@/clients/api";
 import { getUserProfileQuery, getUserTracksQuery } from "@/graphql/query/user";
 import { GetUserProfileResponse, Track } from "@/gql/graphql";
 import SectionGrid from "@/components/_dashboard/_home/SectionGrid";
-import { useRouter } from "next/router";
 import UserHeader from "@/components/_dashboard/_user/UserHeader";
 import DashboardLayout from "@/layout/DashboardLayout";
 import PaginationController from "@/components/_dashboard/PaginationController";
@@ -17,9 +16,6 @@ interface UserPageProps {
 }
 
 const UserPage = ({ user, userTracks }: UserPageProps) => {
-  const router = useRouter()
-  const page = router.query.page ? parseInt(router.query.page as string, 10) : 1;
-
   const [isFollowed, setIsFollowed] = useState(user?.followedByMe || false);
 
   if (!user) {

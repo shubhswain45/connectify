@@ -24,7 +24,7 @@ const SearchTrackContent: React.FC<SearchContentProps> = ({ searchQuery,searchDa
 
   const [hasMore, setHasMore] = useState(true); // Tracks if there are more tracks to load
   const [allTracks, setAllTracks] = useState<any[]>([]); // State to hold all accumulated tracks
-  const { data, isLoading, error } = useSearchTrack(searchQuery, searchData.page); // Fetch 10 tracks per page
+  const { data, isLoading } = useSearchTrack(searchQuery, searchData.page); // Fetch 10 tracks per page
   const [theme] = useGetCurrentTheme();
   const { audioDetails, setAudioDetails } = useAudioStore();
   const { isTrackRepeatable } = useRepeatableTracksStore();
@@ -90,11 +90,7 @@ const SearchTrackContent: React.FC<SearchContentProps> = ({ searchQuery,searchDa
       </div>
     );
   }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
+  
   const handleClick = (track: any, e: React.MouseEvent<HTMLButtonElement, MouseEvent>, isPlayingCurrentSong: boolean) => {
     e.stopPropagation();
     if (isPlayingCurrentSong) {

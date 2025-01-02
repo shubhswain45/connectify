@@ -16,7 +16,7 @@ interface SearchContentProps {
 const SearchUserContent: React.FC<SearchContentProps> = ({ searchData, setSearchData }) => {
     const [hasMore, setHasMore] = useState(true);
     const [allUsers, setAllUsers] = useState<any[]>([]);
-    const { data, isLoading, error } = useSearchUser(searchData.searchQuery, searchData.page);
+    const { data, isLoading } = useSearchUser(searchData.searchQuery, searchData.page);
     const router = useRouter();
     const [prevQuery, setPrevQuery] = useState("");
 
@@ -68,12 +68,6 @@ const SearchUserContent: React.FC<SearchContentProps> = ({ searchData, setSearch
             </div>
         );
     }
-
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    }
-
-    console.log(data);
     
     return (
         <div className="px-4 sm:px-8 max-w-[800px] mx-auto space-y-4 mb-10">
