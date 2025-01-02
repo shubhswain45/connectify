@@ -5,6 +5,9 @@ import { FaEye, FaHeart, FaTrash } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from 'next/router';
 import { Track } from '@/gql/graphql';
+import { useAudioStore } from '@/store/useAudioStore';
+import { useRepeatableTracksStore } from '@/store/useRepeatableTracksStore';
+import { useQueueStore } from '@/store/useQueueStore';
 
 // Helper function to truncate text
 function truncateText(text: string, maxLength: number): string {
@@ -21,6 +24,9 @@ function PlaylistSongs({ tracks, createdBy }: PlaylistSongsProps) {
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();
+    const {audioDetails, setAudioDetails} = useAudioStore()
+    const {isTrackRepeatable} = useRepeatableTracksStore()
+    const {isTrackInQueue} = useQueueStore()
 
     // Toggle dropdown visibility
     const toggleDropdown = (id: string) => {
@@ -44,6 +50,26 @@ function PlaylistSongs({ tracks, createdBy }: PlaylistSongsProps) {
         };
     }, []);
 
+    const handleClick = (track: Track, isPlayingCurrentSong: boolean) => {
+        if (isPlayingCurrentSong) {
+          setAudioDetails({ isPlaying: false });
+          return;
+        }
+    
+        setAudioDetails({
+          id: track.id,
+          title: track.title,
+          artist: track.artist,
+          duration: track.duration,
+          coverImageUrl: track.coverImageUrl || "",
+          audioFileUrl: track.audioFileUrl,
+          isPlaying: true,
+          isFavorite: track.hasLiked,
+          repeatable: isTrackRepeatable(track.id),
+          isQueued: isTrackInQueue(track.id)
+        });
+      };
+
     return (
         <div>
             <div className="space-y-2 py-4 -mt-5">
@@ -52,6 +78,7 @@ function PlaylistSongs({ tracks, createdBy }: PlaylistSongsProps) {
                         key={track.id}
                         className={`grid grid-cols-[16px_4fr_2fr_1fr] gap-4 px-4 py-2 text-sm 
                             text-zinc-400 hover:bg-white/5 rounded-md group`}
+                            onClick={() => handleClick(track, audioDetails.id == track.id)}
                     >
                         <div className="flex items-center justify-center cursor-pointer">
                             <span className="group-hover:hidden">{index + 1}</span>
