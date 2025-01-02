@@ -4,7 +4,7 @@ import { createTrackMutation, likeTrackMutation } from "@/graphql/mutations/trac
 import { searchTrackQuery } from "@/graphql/query/track";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export const useSearchTrack = (query: string, page: number) => {
         return useQuery({

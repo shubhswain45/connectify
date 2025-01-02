@@ -4,7 +4,7 @@ import { forgotPasswordMutation, loginUserMutation, logoutUserMutation, resetPas
 import { getCurrentUserQuery } from "@/graphql/query/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export const useCurrentUser = () => {
     return useQuery({

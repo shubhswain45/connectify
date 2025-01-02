@@ -3,7 +3,7 @@ import { followUserMutation } from "@/graphql/mutations/user";
 import { searchUserQuery } from "@/graphql/query/user";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export const useSearchUser = (query: string, page: number) => {
     return useQuery({
