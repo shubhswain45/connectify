@@ -1,9 +1,24 @@
 import { createGraphqlClient } from "@/clients/api";
 import { CreateTrackPayload } from "@/gql/graphql";
 import { createTrackMutation, likeTrackMutation } from "@/graphql/mutations/track";
-import { useMutation } from "@tanstack/react-query";
+import { searchTrackQuery } from "@/graphql/query/track";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+
+export const useSearchTrack = (query: string, page: number) => {
+        return useQuery({
+            queryKey: ['searchTrack', query, page],
+            queryFn: async () => {
+                const graphqlClient = createGraphqlClient()
+                if (!query) {
+                    return null
+                }
+                const { searchTrack } = await graphqlClient.request(searchTrackQuery, { payload: { query, page } })
+                return searchTrack
+            }
+        })
+}
 
 export const useCreateTrack = () => {
     const router = useRouter();

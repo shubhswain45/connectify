@@ -4,22 +4,36 @@ import { useCurrentUser } from "@/hooks/auth";
 import { useGetCurrentTheme } from "@/hooks/theme";
 import { useLikeTrack } from "@/hooks/track";
 import { useAudioStore } from "@/store/useAudioStore";
+import { MdSkipPrevious } from "react-icons/md";
+import { MdSkipNext } from "react-icons/md";
+
 import {
   Heart,
   Laptop2,
+  ListMinus,
   ListMusic,
+  ListPlus,
   Mic2,
   Pause,
   Play,
   Repeat,
+  RotateCcw,
+  RotateCw,
   Shuffle,
   SkipBack,
   SkipForward,
   Volume1,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useQueueStore } from "@/store/useQueueStore";
+import { useRepeatableTracksStore } from "@/store/useRepeatableTracksStore";
+import { trackSynchronousRequestDataAccessInDev } from "next/dist/server/app-render/dynamic-rendering";
+import { usePlaylistTracksStore } from "@/store/usePlaylistTracksStore";
+import Link from "next/link";
 
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -28,80 +42,276 @@ const formatTime = (seconds: number) => {
 };
 
 export const PlaybackControls = () => {
-  const [theme] = useGetCurrentTheme()
-  const [volume, setVolume] = useState(75);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+  /*** Theme Management ***/
+  const [theme] = useGetCurrentTheme();
+
+  const router = useRouter()
+  /*** Audio Player State Management ***/
   const { audioDetails, setAudioDetails, togglePlay } = useAudioStore();
-  const { mutateAsync: likeTrack, isPending } = useLikeTrack()
+  const { playlistDetails, setPlaylistDetails, toggleTrackLikeStatus, getCurrentTrackIndex, updateTrackAvailability } = usePlaylistTracksStore();
 
-  const { data, isLoading } = useCurrentUser()
-
-  const [isFavorite, setIsFavorite] = useState(audioDetails.isFavorite)
+  // Manage volume, playback time, and audio duration
+  const [volume, setVolume] = useState(75); // Default volume level
+  const [currentTime, setCurrentTime] = useState(0); // Current playback time
+  const [duration, setDuration] = useState(0); // Total duration of the audio
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleLike = async () => {
-    if(!isLoading && !data?.getCurrentUser) {
-      toast.error("Please Login/Signup first")
-      return
+  const { queue, removeSongFromQueue, isTrackInQueue, addSongToQueue, removeTrackById, updateIsFavorite } = useQueueStore()
+
+  /*** User Authentication ***/
+  const { data, isLoading } = useCurrentUser();
+
+  /*** Ref for Audio Element ***==/
+ 
+
+  /*** Mutation Hook for Track Actions ***/
+  const { mutateAsync: likeTrack, isPending } = useLikeTrack();
+
+  const { isTrackRepeatable, markTrackAsRepeatable, unmarkTrackAsRepeatable } = useRepeatableTracksStore()
+
+  /***********************
+   * Helper Functions    *
+   ***********************/
+
+  // Toggle play and pause
+  const togglePlayHandler = () => {
+    if (!audioDetails.audioFileUrl) {
+      return;
     }
-    await likeTrack(audioDetails.id)
-    setIsFavorite(!isFavorite)
-  }
+    togglePlay();
+  };
 
 
+  // Handle liking the current track
+  const handleLike = async () => {
+    if (!isLoading && !data?.getCurrentUser) {
+      toast.error("Please Login/Signup first");
+      return;
+    }
+    await likeTrack(audioDetails.id);
+    if (audioDetails.isFavorite) {
+      updateIsFavorite(audioDetails.id, false)
+      toggleTrackLikeStatus(audioDetails.id, false)
+    } else {
+      updateIsFavorite(audioDetails.id, true)
+      toggleTrackLikeStatus(audioDetails.id, true)
+
+    }
+    setAudioDetails({ isFavorite: !audioDetails.isFavorite })
+  };
+
+  // Handle seeking within the audio track
+  const handleSeek = (value: number[]) => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.currentTime = value[0]; // Seek to the selected time
+      setCurrentTime(value[0]); // Update the playback state
+    }
+  };
+
+  // Navigate to the previous or next track
+  const handleNextPrevSong = (action: "prev" | "next") => {
+    const { tracks, currentTrackIndex } = playlistDetails;
+    const trackIndex = action === "prev" ? currentTrackIndex - 1 : currentTrackIndex + 1;
+
+    // Ensure navigation is valid
+    if ((action === "prev" && !playlistDetails.hasPrev) || (action === "next" && !playlistDetails.hasNext)) {
+      return;
+    }
+
+    // Retrieve the target track details
+    const track = tracks?.[trackIndex];
+    if (!track) return;
+
+    // Update audio details with the target track
+    setAudioDetails({
+      id: track.id,
+      title: track.title,
+      artist: track.artist,
+      duration: track.duration,
+      coverImageUrl: track.coverImageUrl || "",
+      audioFileUrl: track.audioFileUrl,
+      isPlaying: true,
+      isFavorite: track.hasLiked,
+      repeatable: isTrackRepeatable(track.id),
+      isQueued: isTrackInQueue(track.id)
+    });
+  };
+
+  /***********************
+   * Lifecycle Effects   *
+   ***********************/
+
+  // Sync audio element's events (e.g., time updates, end of track) with state
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
+    const currentPath = router.pathname; // Gets the current path definition
+    const currentRoute = router.asPath; // Gets the actual route with dynamic values
+
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
 
+    const handleEnded = () => {
+      const peekTrack = queue.peek()
+
+      if (audioDetails.repeatable) {
+        audio.play()
+        return
+      }
+
+      if (peekTrack) {
+        setAudioDetails({
+          id: peekTrack.id,
+          title: peekTrack.title,
+          artist: peekTrack.artist,
+          duration: peekTrack.duration,
+          coverImageUrl: peekTrack.coverImageUrl || "",
+          audioFileUrl: peekTrack.audioFileUrl,
+          isPlaying: true,
+          isFavorite: peekTrack.hasLiked,
+          repeatable: isTrackRepeatable(peekTrack.id),
+          isQueued: false
+        });
+        removeSongFromQueue()
+        return
+      }
+
+      if (currentPath === '/dashboard') {
+        setAudioDetails({ isPlaying: false }); // Stop playback if no next track
+      } else if (currentPath === '/dashboard/playlist/[id]') {
+
+        const { tracks, currentTrackIndex } = playlistDetails;
+        if (!tracks || tracks?.length === currentTrackIndex + 1) {
+          setAudioDetails({ isPlaying: false }); // Stop playback if no next track
+          return;
+        }
+
+        // Play the next track
+        const nextTrack = tracks?.[currentTrackIndex + 1];
+        if (nextTrack) {
+          setAudioDetails({
+            id: nextTrack.id,
+            title: nextTrack.title,
+            artist: nextTrack.artist,
+            duration: nextTrack.duration,
+            coverImageUrl: nextTrack.coverImageUrl || "",
+            audioFileUrl: nextTrack.audioFileUrl,
+            isPlaying: true,
+            isFavorite: nextTrack.hasLiked,
+            repeatable: isTrackRepeatable(nextTrack.id),
+            isQueued: isTrackInQueue(nextTrack.id)
+          });
+        }
+      };
+    }
+
+    // Add event listeners
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateDuration);
-
-    const handleEnded = () => {
-      setAudioDetails({ isPlaying: false });
-    };
-
     audio.addEventListener("ended", handleEnded);
 
+    // Cleanup event listeners
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", updateDuration);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [audioDetails, setAudioDetails]);
+  }, [audioDetails, setAudioDetails, playlistDetails, audioDetails.repeatable]);
 
+  // Synchronize audio playback state with store
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !audioDetails.audioFileUrl) return;
 
-    // Play or pause based on the state
-    if (audioDetails.isPlaying && audio.paused) {
-      setAudioDetails({ audioRef });
+    if ((audioDetails.isPlaying && audio.paused)) {
+      setAudioDetails({ audoRef: audioRef })
+      console.log("hahahahahhahahahhahahah");
+
       audio.play();
     } else if (!audioDetails.isPlaying && !audio.paused) {
       audio.pause();
     }
+  }, [audioDetails, audioDetails.isPlaying]);
 
-    // Update the audioRef in the store if necessary
-  }, [audioDetails.audioFileUrl, audioDetails.isPlaying, setAudioDetails]);
+  // Update navigation state and favorite status based on the current track
+  useEffect(() => {
+    const { tracks } = playlistDetails
+    if (!tracks) {
+      return
+    }
 
-  const handleSeek = (value: number[]) => {
+    const idx = getCurrentTrackIndex(audioDetails.id)
+    setPlaylistDetails({ currentTrackIndex: idx })
+
+    updateTrackAvailability(idx)
+
+  }, [playlistDetails.tracks, audioDetails]);
+
+  const skipForward = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = value[0]; // Seek to the selected time
-      setCurrentTime(value[0]); // Update the state to reflect the seek operation
+      audioRef.current.currentTime = audioRef.current.currentTime + 10,
+        setCurrentTime(audioRef.current.currentTime);
     }
   };
 
-  const togglePlayHandler = () => {
-    togglePlay();
+  const skipBackward = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = audioRef.current.currentTime - 10,
+        setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleRepeat = () => {
+    // Guard clause for missing track
+    if (!audioDetails) {
+      toast.error('No track available');
+      return;
+    }
+
+    if (audioDetails.repeatable) {
+      unmarkTrackAsRepeatable(audioDetails.id);
+    } else {
+      markTrackAsRepeatable(audioDetails.id);
+    }
+
+    // Update UI state
+    setAudioDetails({ repeatable: !audioDetails.repeatable })
+  }
+
+  const handleQueueOperation = () => {
+    // Guard clause for missing track
+    if (!audioDetails) {
+      toast.error('No track available');
+      return;
+    }
+
+    if (audioDetails.isQueued) {
+      // Remove track from queue
+      removeTrackById(audioDetails.id);
+      setAudioDetails({ isQueued: false })
+    } else {
+      // Add track to queue
+      addSongToQueue({
+        id: audioDetails.id,
+        artist: audioDetails.artist,
+        audioFileUrl: audioDetails.audioFileUrl,
+        hasLiked: audioDetails.isFavorite,
+        title: audioDetails.title,
+        coverImageUrl: audioDetails.coverImageUrl,
+        duration: audioDetails.duration
+      });
+      setAudioDetails({ isQueued: true })
+    }
+
+    // Update UI state
+    toast.success(audioDetails.repeatable ? 'Track removed from queue' : 'Track added to queue');
   };
 
   return (
-    <footer className="h-20 sm:h-24 bg-zinc-900 border-t border-zinc-800 px-4">
+    <footer className="h-20 sm:h-24 bg-[#1f1f1f] px-4">
       <div className="flex justify-between items-center h-full max-w-[1800px] mx-auto">
         {/* Currently playing song */}
         <div className="hidden sm:flex items-center gap-4 min-w-[180px] w-[30%]">
@@ -113,9 +323,12 @@ export const PlaybackControls = () => {
                 className="w-14 h-14 object-cover rounded-md"
               />
               <div className="flex-1 min-w-0">
-                <div className="font-medium truncate hover:underline cursor-pointer">
-                  {audioDetails.title}
-                </div>
+                <Link href={`/dashboard/show/${audioDetails.id}`}>
+                  <div className="font-medium truncate hover:underline cursor-pointer">
+                    {audioDetails.title}
+                  </div>
+                </Link>
+
                 <div className="text-sm text-zinc-400 truncate hover:underline cursor-pointer">
                   {audioDetails.artist}
                 </div>
@@ -132,59 +345,57 @@ export const PlaybackControls = () => {
             <div className="flex items-center justify-center">
               <div className="w-4 h-4 border-2 border-t-transparent border-white animate-spin rounded-full"></div>
             </div>
-          ) : isFavorite ? (
-            <FaHeart style={{color: theme as string}} size={20} />
+          ) : audioDetails.isFavorite ? (
+            <FaHeart style={{ color: theme as string }} size={20} />
           ) : (
-            <Heart size={20} style={{color: theme as string}}/>
+            <Heart size={20} style={{ color: theme as string }} />
           )}
         </button>
 
         {/* Player controls */}
         <div className="flex flex-col items-center gap-2 flex-1 max-w-full sm:max-w-[45%]">
           <div className="flex items-center gap-4 sm:gap-6">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="hidden sm:inline-flex hover:text-white text-zinc-400"
+            <button
+              className={`p-2 rounded-full 
+              ${audioDetails.audioFileUrl ? "text-white hover:bg-zinc-700" : "text-zinc-600"} `}
+              onClick={skipBackward}
             >
-              <Shuffle className="h-4 w-4" />
-            </Button>
+              <RotateCcw size={20} />
+            </button>
+
+            {/* prev button */}
+            <MdSkipPrevious
+              size={30}
+              className={`hover:bg-transparent hover:${playlistDetails.hasPrev ? "text-white" : "text-zinc-600"} ${playlistDetails.hasPrev ? "text-white cursor-pointer" : "text-zinc-600"}  transition-transform duration-300 ease-in-out transform ${playlistDetails.hasPrev && "hover:scale-110"}`}
+              onClick={() => handleNextPrevSong("prev")}
+            />
 
             <Button
               size="icon"
-              variant="ghost"
-              className="hover:text-white text-zinc-400"
-            >
-              <SkipBack className="h-4 w-4" />
-            </Button>
-
-            <Button
-              size="icon"
-              className="bg-white hover:bg-white/80 text-black rounded-full h-8 w-8"
+              className="bg-white hover:bg-white/80 text-black rounded-full h-8 w-8 transition-transform duration-300 ease-in-out transform hover:scale-110"
               onClick={togglePlayHandler}
             >
               {audioDetails.isPlaying ? (
-                <Pause className="h-5 w-5" />
+                <Pause className="h-5 w-5 transition-transform duration-300 ease-in-out transform hover:scale-125" />
               ) : (
-                <Play className="h-5 w-5" />
+                <Play className="h-5 w-5 transition-transform duration-300 ease-in-out transform hover:scale-125" />
               )}
             </Button>
 
-            <Button
-              size="icon"
-              variant="ghost"
-              className="hover:text-white text-zinc-400"
-            >
-              <SkipForward className="h-4 w-4" />
-            </Button>
+            {/* next button */}
+            <MdSkipNext
+              size={30}
+              className={`hover:bg-transparent hover:${playlistDetails.hasNext ? "text-white" : "text-zinc-600"} ${playlistDetails.hasNext ? "text-white cursor-pointer" : "text-zinc-600"}  transition-transform duration-300 ease-in-out transform ${playlistDetails.hasNext && "hover:scale-110"}`}
+              onClick={() => handleNextPrevSong("next")}
+            />
 
-            <Button
-              size="icon"
-              variant="ghost"
-              className="hidden sm:inline-flex hover:text-white text-zinc-400"
+            <button
+              className={`p-2 rounded-full 
+              ${audioDetails.audioFileUrl ? "text-white hover:bg-zinc-700" : "text-zinc-600"} `}
+              onClick={skipForward}
             >
-              <Repeat className="h-4 w-4" />
-            </Button>
+              <RotateCw size={20} />
+            </button>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 w-full">
@@ -205,16 +416,20 @@ export const PlaybackControls = () => {
           <Button
             size="icon"
             variant="ghost"
-            className="hover:text-white text-zinc-400"
+            className="hover:text-white text-zinc-400 hover:bg-transparent"
+            onClick={handleRepeat}
           >
-            <Mic2 className="h-4 w-4" />
+            <Repeat style={{ color: audioDetails.repeatable ? theme as string : "" }} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="hover:text-white text-zinc-400"
+            className="hover:text-white text-zinc-400 hover:bg-transparent"
+            onClick={handleQueueOperation}
           >
-            <ListMusic className="h-4 w-4" />
+            {
+              audioDetails.isQueued ? <ListMinus /> : <ListPlus />
+            }
           </Button>
           <Button
             size="icon"
@@ -250,9 +465,11 @@ export const PlaybackControls = () => {
       </div>
 
       {/* Audio Element */}
-      {audioDetails.audioFileUrl && (
-        <audio ref={audioRef} src={audioDetails.audioFileUrl} />
-      )}
-    </footer>
+      {
+        audioDetails && (
+          <audio ref={audioRef} src={audioDetails.audioFileUrl} />
+        )
+      }
+    </footer >
   );
 };

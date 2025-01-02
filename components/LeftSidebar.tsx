@@ -1,26 +1,32 @@
 import { buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { HomeIcon, Library, LoaderPinwheel, Plus } from "lucide-react";
+import { HomeIcon, Library, LoaderPinwheel, Plus, Router } from "lucide-react";
 import Link from "next/link";
-import { PlaylistSkeleton } from "./PlaylistSkeleton";
-import { useState } from "react";
-import CreateTrackDialog from "./CreateTrackDialog";
+import { PlaylistSkeleton } from "./Skeletons";
+import { useEffect, useState } from "react";
 import { useGetUserPlaylists } from "@/hooks/playlist";
 import { useCurrentUser } from "@/hooks/auth";
+import CreateTrackDialog from "./_dashboard/CreateTrackDialog";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
+import { usePlaylistTracksStore } from "@/store/usePlaylistTracksStore";
 
 const LeftSidebar = () => {
     const [songDialogOpen, setSongDialogOpen] = useState(false);
     const { data: user, isLoading } = useCurrentUser();
     const { data, isLoading: isFetchingUserPlaylist } = useGetUserPlaylists(user?.getCurrentUser?.username || "");
+    const pathname = usePathname()
+    const router = useRouter()
+    const {setPlaylistDetails} = usePlaylistTracksStore()
 
     return (
         <div className="h-full flex flex-col gap-2 mr-1">
             {/* Navigation menu */}
-            <div className="rounded-lg bg-zinc-900 p-4">
+            <div className="rounded-lg bg-[#121212] p-4">
                 <div className="space-y-2">
                     <Link
-                        href="/"
+                        href="/dashboard"
                         className={cn(
                             buttonVariants({
                                 variant: "ghost",
@@ -40,14 +46,14 @@ const LeftSidebar = () => {
                             })
                         )}
                     >
-                         <LoaderPinwheel className="mr-2 size-5" />
+                        <LoaderPinwheel className="mr-2 size-5" />
                         <span className="hidden md:inline">Explore</span>
                     </div>
                 </div>
             </div>
 
             {/* Library section */}
-            <div className="flex-1 rounded-lg bg-zinc-900 p-4">
+            <div className="flex-1 rounded-lg bg-[#121212] p-4">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center text-white px-2">
                         <Library className="size-5 mr-2" />
@@ -72,8 +78,12 @@ const LeftSidebar = () => {
                             </div>
                         ) : (
                             data.playlists.map((playlist) => (
-                                <Link
-                                    href={`dashboard/playlist/${playlist?.id}`}
+                                <div
+                                    onClick={() => {
+                                        if (pathname !== `/dashboard/playlist/${playlist?.id}`) {
+                                            router.push(`/dashboard/playlist/${playlist?.id}`);
+                                        }
+                                    }}
                                     key={playlist?.id}
                                     className="p-2 hover:bg-zinc-800 rounded-md flex items-center gap-3 group cursor-pointer"
                                 >
@@ -85,7 +95,7 @@ const LeftSidebar = () => {
                                     <div className="flex-1 min-w-0 hidden md:block">
                                         <p className="font-medium truncate">{playlist?.name}</p>
                                     </div>
-                                </Link>
+                                </div>
                             ))
                         )}
                     </div>

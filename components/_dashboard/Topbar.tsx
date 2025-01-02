@@ -9,7 +9,7 @@ const Topbar = () => {
   const { mutate: logoutUser } = useLogoutUser();
 
   return (
-    <div className="flex items-center justify-between p-4 sticky top-0 bg-zinc-900/75 backdrop-blur-md z-10">
+    <div className="flex items-center justify-between p-4 sticky top-0 bg-[#1f1f1f] backdrop-blur-md z-10">
       {/* Logo Section */}
       <Link href={"/dashboard"}>
         <div className="flex items-center font-bold cursor-pointer"

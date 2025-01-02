@@ -9,6 +9,10 @@ export const getFeedTracksQuery = graphql(`#graphql
           duration
           audioFileUrl  
           coverImageUrl
+
+          author {
+            username
+          }
   }
 }`)
 
@@ -24,4 +28,21 @@ export const getTrackByIdQuery = graphql(`#graphql
           hasLiked
   }
 }
+  `)
+
+  export const searchTrackQuery = graphql(`#graphql
+  query SearchTrack($payload: SearchPayload!) {
+    searchTrack(payload: $payload) {
+      id
+      title
+      artist
+      duration
+      audioFileUrl  
+      coverImageUrl
+
+      author {
+        username
+      }
+    }
+  }
   `)

@@ -1,8 +1,23 @@
 import { createGraphqlClient } from "@/clients/api";
 import { followUserMutation } from "@/graphql/mutations/user";
-import { useMutation } from "@tanstack/react-query";
+import { searchUserQuery } from "@/graphql/query/user";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+
+export const useSearchUser = (query: string, page: number) => {
+    return useQuery({
+        queryKey: ['searchUser', query, page],
+        queryFn: async () => {
+            const graphqlClient = createGraphqlClient()
+            if (!query) {
+                return null
+            }
+            const { searchUser } = await graphqlClient.request(searchUserQuery, { payload: { query, page } })
+            return searchUser
+        }
+    })
+}
 
 export const useFollowUser = () => {
     const router = useRouter();
@@ -22,7 +37,7 @@ export const useFollowUser = () => {
             }
         },
         onSuccess: (data) => {
-            if(data) {
+            if (data) {
                 toast.success("Followed user");
             } else {
                 toast.success("unFollowed user")

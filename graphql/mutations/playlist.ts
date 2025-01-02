@@ -5,3 +5,9 @@ mutation AddSongToPlaylist($payload: AddSongToPlaylistInput!) {
   addSongToPlaylist(payload: $payload)
 }
 `)
+
+export const RemoveSongFromPlaylistMutation = graphql(`#graphql
+mutation RemoveSongFromPlaylist($payload: RemoveSongFromPlaylistInput!) {
+  removeSongFromPlaylist(payload: $payload)
+}
+`)

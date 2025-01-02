@@ -9,10 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi"; // Importing the search icon
-import CreatePlaylistDialog from "./CreatePlaylistDialog";
 import { useCurrentUser } from "@/hooks/auth";
 import { useAddSongToPlaylist, useGetUserPlaylists } from "@/hooks/playlist";
-import { PlaylistSkeletonTwo } from "./PlaylistSkeleton";
+import CreatePlaylistDialog from "@/components/CreatePlaylistDialog";
+import { PlaylistSkeletonTwo } from "@/components/Skeletons";
 
 interface CreateTrackDialogProps {
     isOpen: boolean;
@@ -37,6 +37,7 @@ const ChoosePlaylistDialog = ({ isOpen, setIsOpen, trackId }: CreateTrackDialogP
             trackIds: [trackId]
         })
     }
+    
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="bg-gradient-to-b from-black to-zinc-900 border-zinc-700 max-h-[150vh] overflow-auto">

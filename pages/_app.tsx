@@ -1,10 +1,10 @@
 import MainLayout from "@/layout/MainLayout";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { AppProps } from "next/app";
-import { ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from 'sonner'
 
 // Create a QueryClient instance with staleTime set to 30 minutes
 const queryClient = new QueryClient({
@@ -24,12 +24,13 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastContainer />
+      <Toaster />
       {noLayoutPaths.includes(pathname) ? (
         <Component {...pageProps} />
       ) : (
         <MainLayout>
           <Component {...pageProps} />
+          <ReactQueryDevtools />
         </MainLayout>
       )}
     </QueryClientProvider>

@@ -43,3 +43,30 @@ query GetUserPlaylists($userId: String!) {
   }
 }
         `)
+
+
+
+export const searchUserQuery = graphql(`#graphql
+  query SearchUser($payload: SearchPayload!) {
+  searchUser(payload: $payload) {
+    username
+    fullName
+    profileImageURL
+    totalTracks
+  }
+}
+`)
+
+export const getUserLikedSongsQuery = graphql(`#graphql
+  query GetUserLikedSongs {
+  getUserLikedSongs {
+      id
+      title
+      artist
+      duration
+      audioFileUrl  
+      coverImageUrl
+  }
+}
+`)
+

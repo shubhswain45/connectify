@@ -50,3 +50,21 @@ export const getFeedPlaylistsQuery = graphql(`
   }
 }
 `);
+
+  export const searchPlaylistQuery = graphql(`#graphql
+ query SearchPlaylist($payload: SearchPayload!) {
+  searchPlaylist(payload: $payload) {
+      playlists {
+        id
+        name
+        coverImageUrl
+        totalTracks
+        author {
+          id
+          username
+          profileImageURL
+        }
+      }
+    }
+  }
+  `)

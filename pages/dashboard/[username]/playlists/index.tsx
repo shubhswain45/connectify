@@ -1,6 +1,5 @@
 import { useState } from "react"; // Import useState for local state
 import { ScrollArea } from "@/components/ui/scroll-area";
-import Topbar from "@/components/Topbar";
 import { ChevronLeft, ChevronRight, Edit2 } from "lucide-react"; // Lucide React icon for edit
 import FeaturedSection from "@/components/FeaturedSection";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
@@ -8,13 +7,17 @@ import { parseCookies } from "nookies"; // Used for parsing cookies
 import { createGraphqlClient } from "@/clients/api";
 import { getUserPlaylistsQuery, getUserProfileQuery } from "@/graphql/query/user";
 import { GetUserProfileResponse, UserPlaylistsResponse } from "@/gql/graphql";
-import SectionGrid from "@/components/SectionGrid";
+import SectionGrid from "@/components/_dashboard/_home/SectionGrid";
 import { useFollowUser } from "@/hooks/user";
 import { useCurrentUser } from "@/hooks/auth";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 import { useRouter } from "next/router";
-import { useGetCurrentTheme } from "@/hooks/theme";
-import UserHeader from "@/components/UserHeader";
+import { useGetCurrentBackground, useGetCurrentTheme } from "@/hooks/theme";
+import UserHeader from "@/components/_dashboard/_user/UserHeader";
+import Topbar from "../../../../components/_dashboard/Topbar";
+import DashboardLayout from "@/layout/DashboardLayout";
+import PaginationController from "@/components/_dashboard/PaginationController";
+import UserProfileHeader from "@/components/_dashboard/_user/UserProfileHeader";
 
 interface UserPageProps {
     user: GetUserProfileResponse | null;
@@ -22,18 +25,12 @@ interface UserPageProps {
 }
 
 const UserPage = ({ user, res }: UserPageProps) => {
-    const [theme] = useGetCurrentTheme()
-    const { mutateAsync: followUser, isPending } = useFollowUser()
+    const [bg] = useGetCurrentBackground()
     const { data } = useCurrentUser()
     const router = useRouter()
     const page = router.query.page ? parseInt(router.query.page as string, 10) : 1;
 
     const [isFollowed, setIsFollowed] = useState(user?.followedByMe || false);
-    
-    const handleFollowToggle = async () => {
-        await followUser(user?.id || "")
-        setIsFollowed(!isFollowed)
-    };
 
     if (!user) {
         return (
@@ -46,150 +43,34 @@ const UserPage = ({ user, res }: UserPageProps) => {
     }
 
     return (
-        <main className="rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900">
-            {/* Topbar */}
-            <Topbar />
+        <DashboardLayout background={bg} shouldShowFeatureHeader={false}>
 
-            {/* Scrollable Content */}
-            <ScrollArea className="h-[calc(100vh-180px)]">
-                <div className="p-4 sm:p-6">
-                    {/* Greeting Section */}
-                    <h1 className="text-2xl sm:text-3xl font-bold mb-6">Welcome to your profile</h1>
+            <div className="p-4 sm:p-6">
+                <UserProfileHeader user={user} isFollowed={isFollowed} setIsFollowed={setIsFollowed} />
 
-                    {/* Profile Section */}
-                    <div className="bg-zinc-800 rounded-xl shadow-lg p-8 mb-8">
-                        <div className="flex flex-col items-center">
-                            {/* Avatar */}
-                            <img
-                                src={user?.profileImageURL || "https://via.placeholder.com/150"}
-                                alt="User Avatar"
-                                className="w-36 h-36 rounded-full mb-4 border-4 border-teal-500"
-                            />
-                            {/* Username */}
-                            <h2 className="text-3xl font-semibold">{user?.username}</h2>
-                            {/* Bio */}
-                            <p className="text-gray-400 mt-2">{user?.bio}</p>
-                        </div>
+                {/* Header Sections */}
+                <UserHeader />
 
-                        {/* Stats Section */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 text-center">
-                            <div>
-                                <h3 className="text-xl font-semibold text-white">{user?.totalTracks}</h3>
-                                <p className="text-gray-400">Tracks</p>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-semibold text-white">{user?.totalFollowers}</h3>
-                                <p className="text-gray-400">Followers</p>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-semibold text-white">{user?.totalFollowings}</h3>
-                                <p className="text-gray-400">Following</p>
-                            </div>
-
-                            <div>
-                                {/* Responsive Follow/Unfollow Button */}
-                                {
-                                    isPending ? (
-                                        <div className="flex items-center justify-center">
-                                            <div className="w-4 h-4 border-2 border-t-transparent border-white animate-spin rounded-full"></div>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            onClick={handleFollowToggle}
-                                            className={`px-4 py-2 sm:px-6 sm:py-3 rounded-full text-sm sm:text-base font-semibold ${isFollowed
-                                                ? "text-white border border-white hover:text-gray-300"
-                                                : "bg-white text-black hover:bg-gray-300"
-                                                }`}
-                                        >
-                                            {isFollowed ? "Unfollow" : "Follow"}
-                                        </button>
-                                    )
-                                }
-                            </div>
-                        </div>
-
-                        {/* Edit Profile Button */}
-                        {
-                            data?.getCurrentUser?.id == user.id && (<div className="flex justify-center mt-6">
-                                <button className="px-6 py-2 text-lg font-semibold text-teal-500 border border-teal-500 rounded-full hover:bg-teal-600 hover:text-white flex items-center">
-                                    <Edit2 size={18} className="mr-2" />
-                                    Edit Profile
-                                </button>
-                            </div>)
-                        }
+                {/* Additional Sections */}
+                {!res?.playlists?.length ? (
+                    <div className="flex flex-col items-center justify-center h-[calc(100vh-240px)] space-y-4">
+                        <h1 className="text-xl sm:text-2xl font-bold text-zinc-400">No Playlists yet ☹️</h1>
                     </div>
-
-                    <UserHeader />
-
-                    {/* Featured Songs Section */}
-                    <FeaturedSection />
-
-                    {/* Additional Sections */}
-                    {!res?.playlists?.length ? (
-                        <div className="flex flex-col items-center justify-center h-[calc(100vh-240px)] space-y-4">
-                            <h1 className="text-xl sm:text-2xl font-bold text-zinc-400">No Playlists yet ☹️</h1>
-                        </div>
-                    ) : (
-                        <div className="space-y-8">
-                            <SectionGrid playlists={res.playlists} />
-                        </div>
-                    )}
+                ) : (
+                    <div className="space-y-8">
+                        <SectionGrid playlists={res.playlists} />
+                    </div>
+                )}
 
 
-                </div>
+            </div>
 
-                {
-                    res?.playlists?.length && (
-                        <Pagination>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationLink
-                                        aria-label="Previous Page"
-                                        className="hover:bg-zinc-700 text-zinc-300 cursor-pointer"
-                                        onClick={() => router.push(`/dashboard/${user.username}/?page=${Math.max(1, page - 1)}`)}
-                                    >
-                                        <ChevronLeft />
-                                    </PaginationLink>
-
-                                </PaginationItem>
-
-                                {[page, page + 1, page + 2].map((p, index) => (
-                                    p > 0 && (
-                                        <PaginationItem key={index}>
-                                            <PaginationLink
-                                                onClick={() => {
-                                                    if (p === page) {
-                                                        return;
-                                                    }
-                                                    router.push(`/dashboard/${user.username}/?page=${p}`);
-                                                }}
-                                                className={p === page ? "text-white hover:text-white" : "hover:bg-zinc-700 text-zinc-300 cursor-pointer"}
-                                                style={p === page ? { backgroundColor: theme as string } : {}}
-                                            >
-
-                                                {p}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    )
-                                ))}
-                                <PaginationItem>
-                                    <PaginationEllipsis />
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink
-                                        onClick={() => router.push(`/dashboard/${user.username}/?page=${page + 1}`)}
-                                        className="hover:bg-zinc-700 text-zinc-300 cursor-pointer"
-                                    >
-                                        <ChevronRight />
-                                    </PaginationLink>
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    )
-                }
-
-            </ScrollArea>
-        </main>
+            {
+                res?.playlists?.length && (
+                    <PaginationController basePath={`dashboard/${user.username}`} hasNextPage={res?.playlists?.length >= 5} />
+                )
+            }
+        </DashboardLayout>
     );
 };
 

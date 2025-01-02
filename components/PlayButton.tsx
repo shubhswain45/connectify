@@ -2,11 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Track } from "@/gql/graphql";
 import { useGetCurrentTheme } from "@/hooks/theme";
 import { useAudioStore } from "@/store/useAudioStore";
+import { useQueueStore } from "@/store/useQueueStore";
+import { useRepeatableTracksStore } from "@/store/useRepeatableTracksStore";
 import { Pause, Play } from "lucide-react";
 
 const PlayButton = ({ track }: { track: Track }) => {
   const [theme] = useGetCurrentTheme()
   const { audioDetails, setAudioDetails } = useAudioStore();
+  const { isTrackRepeatable, markTrackAsRepeatable, unmarkTrackAsRepeatable } = useRepeatableTracksStore()
+  const { isTrackInQueue } = useQueueStore()
 
   const isPlayingCurrentSong =
     audioDetails.audioFileUrl === track.audioFileUrl && audioDetails.isPlaying;
@@ -16,7 +20,6 @@ const PlayButton = ({ track }: { track: Track }) => {
     e.stopPropagation();
 
     if (isPlayingCurrentSong) {
-      audioDetails.audioRef?.current?.pause();
       setAudioDetails({ isPlaying: false });
       return;
     }
@@ -30,6 +33,8 @@ const PlayButton = ({ track }: { track: Track }) => {
       audioFileUrl: track.audioFileUrl,
       isPlaying: true,
       isFavorite: track.hasLiked,
+      repeatable: isTrackRepeatable(track.id),
+      isQueued: isTrackInQueue(track.id)
     });
   };
 

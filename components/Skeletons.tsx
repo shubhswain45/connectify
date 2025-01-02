@@ -20,3 +20,25 @@ export const PlaylistSkeletonTwo = () => {
 		</div>
 	));
 };
+
+export const SearchContentSkeleton = () => {
+	return (
+	  <div className="px-4 sm:px-8 max-w-[800px] mx-auto space-y-4">
+		{Array.from({ length: 7 }).map((_, i) => (
+		  <div
+			key={i}
+			className="p-3 rounded-md flex items-center gap-4 animate-pulse bg-zinc-800"
+		  >
+			{/* Image Skeleton */}
+			<div className="w-16 h-16 bg-zinc-900 rounded-md"></div>
+  
+			{/* Text Skeleton */}
+			<div className="flex flex-col flex-1 space-y-2">
+			  <div className="h-3 bg-zinc-900 rounded w-3/4"></div>
+			  <div className="h-3 bg-zinc-900 rounded w-1/2"></div>
+			</div>
+		  </div>
+		))}
+	  </div>
+	);
+  };

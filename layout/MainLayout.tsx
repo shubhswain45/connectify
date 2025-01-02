@@ -4,6 +4,10 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/router"; // Import useRouter
 import DummyControls from "@/components/DummyControls";
+import Topbar from "@/components/_dashboard/Topbar";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import FeatureHeader from "@/components/_dashboard/FeatureHeader";
+import { useBackgroundStore } from "@/store/useBackgroundStore";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -11,6 +15,7 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children, className }: MainLayoutProps) => {
+  const {bg} = useBackgroundStore()
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter(); // Get the current route
 
@@ -39,12 +44,22 @@ const MainLayout = ({ children, className }: MainLayoutProps) => {
 
         {/* Main Content */}
         <ResizablePanel defaultSize={isMobile ? 80 : 75}>
-          {children}
+          {/* <main className="rounded-md overflow-hidden h-full"
+            style={{ backgroundImage: `linear-gradient(to bottom,${bg}, #18181bcc, #121212)` }}>
+
+            <Topbar />
+
+            <ScrollArea className="h-[calc(100vh-180px)] relative">
+              <FeatureHeader /> */}
+              {children}
+            {/* </ScrollArea>
+
+          </main> */}
         </ResizablePanel>
       </ResizablePanelGroup>
 
       {/* Conditionally render PlaybackControls based on the route */}
-      {!isShowPage ? <PlaybackControls />: <DummyControls/>}
+      {!isShowPage ? <PlaybackControls /> : <DummyControls />}
     </div>
   );
 };

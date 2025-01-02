@@ -21,6 +21,7 @@ const documents = {
     "#graphql\n    mutation ForgotPassword($usernameOrEmail: String!) {\n  forgotPassword(usernameOrEmail: $usernameOrEmail)\n}\n": types.ForgotPasswordDocument,
     "#graphql\n  mutation ResetPassword($input: ResetPasswordInput!){       \n      resetPassword(input: $input)\n  }\n": types.ResetPasswordDocument,
     "#graphql\nmutation AddSongToPlaylist($payload: AddSongToPlaylistInput!) {\n  addSongToPlaylist(payload: $payload)\n}\n": types.AddSongToPlaylistDocument,
+    "#graphql\nmutation RemoveSongFromPlaylist($payload: RemoveSongFromPlaylistInput!) {\n  removeSongFromPlaylist(payload: $payload)\n}\n": types.RemoveSongFromPlaylistDocument,
     "#graphql\n    mutation CreateTrack($payload: createTrackPayload!) {\n    createTrack(payload: $payload) {\n      id\n      title\n      artist\n      duration\n      coverImageUrl\n      audioFileUrl\n  \n      author {\n        id\n        username\n        profileImageURL\n      }\n    }\n  }\n  ": types.CreateTrackDocument,
     "#graphql\n mutation LikeTrack($trackId: String!) {\n  likeTrack(trackId: $trackId)\n}\n": types.LikeTrackDocument,
     "#graphql\n    mutation FollowUser($userId: String!) {\n  followUser(userId: $userId)\n}\n": types.FollowUserDocument,
@@ -28,11 +29,15 @@ const documents = {
     "#graphql\nquery GetCurrentUserPlaylists($username: String!) {\n  getCurrentUserPlaylists(username: $username) {\n    playlists {\n      id\n      name\n      coverImageUrl\n    }\n  }\n}\n": types.GetCurrentUserPlaylistsDocument,
     "\n  #graphql\n  query GetPlaylistSongs($playlistId: String!) {\n    getPlaylistSongs(playlistId: $playlistId) {\n      id\n      title\n      coverImageUrl\n      tracks {\n        id\n        title\n        artist\n        duration\n        audioFileUrl  \n        coverImageUrl\n        hasLiked  \n      }\n    }\n  }\n": types.GetPlaylistSongsDocument,
     "\n  #graphql\n  query GetFeedPlaylists {\n  getFeedPlaylists {\n    playlists {\n      id\n      name\n      coverImageUrl\n      totalTracks\n      author {\n        id\n        username\n        profileImageURL\n      }\n    }\n  }\n}\n": types.GetFeedPlaylistsDocument,
-    "#graphql\n   query GetFeedTracks($page: Int!) {\n  getFeedTracks(page: $page) {\n          id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n  }\n}": types.GetFeedTracksDocument,
+    "#graphql\n query SearchPlaylist($payload: SearchPayload!) {\n  searchPlaylist(payload: $payload) {\n      playlists {\n        id\n        name\n        coverImageUrl\n        totalTracks\n        author {\n          id\n          username\n          profileImageURL\n        }\n      }\n    }\n  }\n  ": types.SearchPlaylistDocument,
+    "#graphql\n   query GetFeedTracks($page: Int!) {\n  getFeedTracks(page: $page) {\n          id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n\n          author {\n            username\n          }\n  }\n}": types.GetFeedTracksDocument,
     "#graphql\n  query GetTrackById($trackId: String!) {\n  getTrackById(trackId: $trackId) {\n    id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n          hasLiked\n  }\n}\n  ": types.GetTrackByIdDocument,
+    "#graphql\n  query SearchTrack($payload: SearchPayload!) {\n    searchTrack(payload: $payload) {\n      id\n      title\n      artist\n      duration\n      audioFileUrl  \n      coverImageUrl\n\n      author {\n        username\n      }\n    }\n  }\n  ": types.SearchTrackDocument,
     "#graphql\nquery GetUserProfile($username: String!) {\n  getUserProfile(username: $username) {\n    id\n        username\n        fullName\n        profileImageURL\n        bio\n        totalTracks\n        totalFollowers\n        totalFollowings\n        followedByMe\n  }\n}\n    ": types.GetUserProfileDocument,
     "#graphql\n  query GetUserTracks($payload: GetUserTracksPayload!) {\n  getUserTracks(payload: $payload) {\n    \nid                  \ntitle           \nartist            \ncoverImageUrl     \naudioFileUrl     \ncreatedAt       \nupdatedAt        \nhasLiked \n  }\n}\n        ": types.GetUserTracksDocument,
     "#graphql\nquery GetUserPlaylists($userId: String!) {\n  getUserPlaylists(userId: $userId) {\n    playlists {\n      id\n      name\n      coverImageUrl\n    }\n  }\n}\n        ": types.GetUserPlaylistsDocument,
+    "#graphql\n  query SearchUser($payload: SearchPayload!) {\n  searchUser(payload: $payload) {\n    username\n    fullName\n    profileImageURL\n    totalTracks\n  }\n}\n": types.SearchUserDocument,
+    "#graphql\n  query GetUserLikedSongs {\n  getUserLikedSongs {\n      id\n      title\n      artist\n      duration\n      audioFileUrl  \n      coverImageUrl\n  }\n}\n": types.GetUserLikedSongsDocument,
 };
 
 /**
@@ -80,6 +85,10 @@ export function graphql(source: "#graphql\nmutation AddSongToPlaylist($payload: 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "#graphql\nmutation RemoveSongFromPlaylist($payload: RemoveSongFromPlaylistInput!) {\n  removeSongFromPlaylist(payload: $payload)\n}\n"): (typeof documents)["#graphql\nmutation RemoveSongFromPlaylist($payload: RemoveSongFromPlaylistInput!) {\n  removeSongFromPlaylist(payload: $payload)\n}\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "#graphql\n    mutation CreateTrack($payload: createTrackPayload!) {\n    createTrack(payload: $payload) {\n      id\n      title\n      artist\n      duration\n      coverImageUrl\n      audioFileUrl\n  \n      author {\n        id\n        username\n        profileImageURL\n      }\n    }\n  }\n  "): (typeof documents)["#graphql\n    mutation CreateTrack($payload: createTrackPayload!) {\n    createTrack(payload: $payload) {\n      id\n      title\n      artist\n      duration\n      coverImageUrl\n      audioFileUrl\n  \n      author {\n        id\n        username\n        profileImageURL\n      }\n    }\n  }\n  "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -108,11 +117,19 @@ export function graphql(source: "\n  #graphql\n  query GetFeedPlaylists {\n  get
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "#graphql\n   query GetFeedTracks($page: Int!) {\n  getFeedTracks(page: $page) {\n          id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n  }\n}"): (typeof documents)["#graphql\n   query GetFeedTracks($page: Int!) {\n  getFeedTracks(page: $page) {\n          id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n  }\n}"];
+export function graphql(source: "#graphql\n query SearchPlaylist($payload: SearchPayload!) {\n  searchPlaylist(payload: $payload) {\n      playlists {\n        id\n        name\n        coverImageUrl\n        totalTracks\n        author {\n          id\n          username\n          profileImageURL\n        }\n      }\n    }\n  }\n  "): (typeof documents)["#graphql\n query SearchPlaylist($payload: SearchPayload!) {\n  searchPlaylist(payload: $payload) {\n      playlists {\n        id\n        name\n        coverImageUrl\n        totalTracks\n        author {\n          id\n          username\n          profileImageURL\n        }\n      }\n    }\n  }\n  "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "#graphql\n   query GetFeedTracks($page: Int!) {\n  getFeedTracks(page: $page) {\n          id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n\n          author {\n            username\n          }\n  }\n}"): (typeof documents)["#graphql\n   query GetFeedTracks($page: Int!) {\n  getFeedTracks(page: $page) {\n          id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n\n          author {\n            username\n          }\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "#graphql\n  query GetTrackById($trackId: String!) {\n  getTrackById(trackId: $trackId) {\n    id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n          hasLiked\n  }\n}\n  "): (typeof documents)["#graphql\n  query GetTrackById($trackId: String!) {\n  getTrackById(trackId: $trackId) {\n    id\n          title\n          artist\n          duration\n          audioFileUrl  \n          coverImageUrl\n          hasLiked\n  }\n}\n  "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "#graphql\n  query SearchTrack($payload: SearchPayload!) {\n    searchTrack(payload: $payload) {\n      id\n      title\n      artist\n      duration\n      audioFileUrl  \n      coverImageUrl\n\n      author {\n        username\n      }\n    }\n  }\n  "): (typeof documents)["#graphql\n  query SearchTrack($payload: SearchPayload!) {\n    searchTrack(payload: $payload) {\n      id\n      title\n      artist\n      duration\n      audioFileUrl  \n      coverImageUrl\n\n      author {\n        username\n      }\n    }\n  }\n  "];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -125,6 +142,14 @@ export function graphql(source: "#graphql\n  query GetUserTracks($payload: GetUs
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "#graphql\nquery GetUserPlaylists($userId: String!) {\n  getUserPlaylists(userId: $userId) {\n    playlists {\n      id\n      name\n      coverImageUrl\n    }\n  }\n}\n        "): (typeof documents)["#graphql\nquery GetUserPlaylists($userId: String!) {\n  getUserPlaylists(userId: $userId) {\n    playlists {\n      id\n      name\n      coverImageUrl\n    }\n  }\n}\n        "];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "#graphql\n  query SearchUser($payload: SearchPayload!) {\n  searchUser(payload: $payload) {\n    username\n    fullName\n    profileImageURL\n    totalTracks\n  }\n}\n"): (typeof documents)["#graphql\n  query SearchUser($payload: SearchPayload!) {\n  searchUser(payload: $payload) {\n    username\n    fullName\n    profileImageURL\n    totalTracks\n  }\n}\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "#graphql\n  query GetUserLikedSongs {\n  getUserLikedSongs {\n      id\n      title\n      artist\n      duration\n      audioFileUrl  \n      coverImageUrl\n  }\n}\n"): (typeof documents)["#graphql\n  query GetUserLikedSongs {\n  getUserLikedSongs {\n      id\n      title\n      artist\n      duration\n      audioFileUrl  \n      coverImageUrl\n  }\n}\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

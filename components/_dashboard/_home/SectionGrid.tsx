@@ -21,7 +21,7 @@ const SectionGrid = ({ tracks, playlists }: SectionGridProps) => {
           ? playlists.map((playlist) => (
               <div
                 key={playlist.id}
-                className="bg-zinc-800/40 p-4 rounded-md hover:bg-zinc-700/40 transition-all group cursor-pointer"
+                className="bg-[#1f1f1f] p-4 rounded-md hover:bg-[#353433] transition-all group cursor-pointer"
               >
                 <div className="relative mb-4">
                   <div className="aspect-square rounded-md shadow-lg overflow-hidden">
@@ -43,7 +43,7 @@ const SectionGrid = ({ tracks, playlists }: SectionGridProps) => {
           : tracks?.map((track) => (
               <div
                 key={track.id}
-                className="bg-zinc-800/40 p-4 rounded-md hover:bg-zinc-700/40 transition-all group cursor-pointer"
+                className="bg-[#1f1f1f] p-4 rounded-md hover:bg-[#353433] transition-all group cursor-pointer"
               >
                 <div className="relative mb-4">
                   <div className="aspect-square rounded-md shadow-lg overflow-hidden">
@@ -58,6 +58,7 @@ const SectionGrid = ({ tracks, playlists }: SectionGridProps) => {
                   </div>
                 </div>
                 <h3 className="font-medium mb-2 truncate">{track.title}</h3>
+                <h3 className="font-medium mb-2 truncate">By : {track.author?.username}</h3> 
               </div>
             ))}
       </div>

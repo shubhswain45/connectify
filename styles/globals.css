@@ -84,3 +84,46 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom range input thumb */
+.range-slider::-webkit-slider-thumb {
+  background-color: white; /* White thumb */
+  border-radius: 50%; /* Circular thumb */
+  width: 13px; /* Thumb size */
+  height: 13px; /* Thumb size */
+  cursor: pointer;
+  appearance: none;
+}
+
+.range-slider::-moz-range-thumb {
+  background-color: white; /* White thumb */
+  border-radius: 50%; /* Circular thumb */
+  width: 13px; /* Thumb size */
+  height: 13px; /* Thumb size */
+  cursor: pointer;
+  appearance: none;
+}
+
+.range-slider::-ms-thumb {
+  background-color: white; /* White thumb */
+  border-radius: 50%; /* Circular thumb */
+  width: 13px; /* Thumb size */
+  height: 13px; /* Thumb size */
+  cursor: pointer;
+  appearance: none;
+}
+
+::-webkit-scrollbar {
+	width: 0px;
+}
+
+::-webkit-scrollbar-track {
+	background-color: "transparent";
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #888;
+}
+::-webkit-scrollbar-thumb {
+	background-color: #555;
+}

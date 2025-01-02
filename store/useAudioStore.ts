@@ -10,9 +10,11 @@ interface AudioStore {
     duration: string;
     coverImageUrl: string | null;
     audioFileUrl: string;
-    audioRef: AudioRefType | null; // Updated here
     isPlaying: boolean;
     isFavorite: boolean
+    audoRef: AudioRefType | null;
+    repeatable: boolean
+    isQueued: boolean
   };
   setAudioDetails: (audioDetails: Partial<AudioStore['audioDetails']>) => void;
   togglePlay: () => void;
@@ -26,9 +28,11 @@ export const useAudioStore = create<AudioStore>((set) => ({
     duration: '',
     coverImageUrl: null,
     audioFileUrl: '',
-    audioRef: null,
     isPlaying: false,
-    isFavorite: false
+    isFavorite: false,
+    audoRef: null,
+    repeatable: false,
+    isQueued: false
   },
   setAudioDetails: (audioDetails) =>
     set((state) => ({
