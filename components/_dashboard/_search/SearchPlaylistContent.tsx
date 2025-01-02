@@ -3,6 +3,13 @@ import { useRouter } from 'next/router';
 import { SearchContentSkeleton } from '../../Skeletons';
 import { useSearchPlaylist } from '@/hooks/playlist';
 
+interface UserPlaylistsResponseItem {
+    id: string;  // ID is commonly represented as a string, but you can modify it based on your actual data type.
+    name: string;
+    coverImageUrl: string;
+    totalTracks: number;
+}
+
 
 interface SearchData {
     searchQuery: string;
@@ -18,26 +25,35 @@ const SearchPlaylistContent: React.FC<SearchContentProps> = ({ searchData, setSe
     console.log("searchData", searchData);
 
     const [hasMore, setHasMore] = useState(true); // Tracks if there are more tracks to load
-    const [allPlaylists, setAllPlaylists] = useState<any[]>([]); // State to hold all accumulated tracks
+    const [allPlaylists, setAllPlaylists] = useState<UserPlaylistsResponseItem[] | undefined>([]); // State to hold all accumulated tracks
     const { data, isLoading } = useSearchPlaylist(searchData.searchQuery, searchData.page); // Fetch 10 tracks per page
     const router = useRouter();
     const [prevQuery, setPrevQuery] = useState("")
 
     console.log("===================", data);
-    
+
+
     useEffect(() => {
         if (!data) return
 
         // Check if the search query is different from the previous query before updating
         if (searchData.searchQuery !== prevQuery) {
             if (data) {
-                setAllPlaylists(data?.playlists || []); // Reset the tracks when the query changes
+                const playlists = data.playlists?.map((playlist) => {
+                    return {
+                        id: playlist.id,
+                        name: playlist.name,
+                        coverImageUrl: playlist.coverImageUrl,
+                        totalTracks: playlist.totalTracks
+                    }
+                })
+                setAllPlaylists(playlists); // Reset the tracks when the query changes
                 setPrevQuery(searchData.searchQuery); // Update prevQuery only when the search query changes
             }
         } else if (data && (data?.playlists?.length || 0) > 0) {
             // Append new data only if the query remains the same
-            if (searchData.page != 1) {
-                setAllPlaylists(prevPlaylist => [...prevPlaylist, ...data?.playlists || []]);
+            if (searchData.page !== 1) {
+                setAllPlaylists(prevPlaylist => [...(prevPlaylist || []), ...(data?.playlists || [])]);
             }
         }
 
@@ -74,7 +90,7 @@ const SearchPlaylistContent: React.FC<SearchContentProps> = ({ searchData, setSe
         );
     }
 
-    if (!isLoading && data?.playlists?.length === 0 && searchData.searchQuery !== '' && !allPlaylists.length) {
+    if (!isLoading && data?.playlists?.length === 0 && searchData.searchQuery !== '' && !allPlaylists?.length) {
         return (
             <div className="flex justify-center items-center h-[50vh]">
                 <h2 className="text-gray-500 text-lg font-medium">
@@ -114,7 +130,7 @@ const SearchPlaylistContent: React.FC<SearchContentProps> = ({ searchData, setSe
             })}
 
             {/* Conditionally render the Load More button */}
-            {allPlaylists?.length >= 3 && hasMore && (
+            {(allPlaylists?.length || 0) >= 3 && hasMore && (
                 <div className="flex justify-center items-center w-full mt-4">
                     <button
                         onClick={loadMoreTracks}

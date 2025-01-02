@@ -175,7 +175,7 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
             isQueued: isTrackInQueue(track.id)
         });
     }, [track, isTrackRepeatable, isTrackInQueue, setAudioDetails]);
-    
+
     return (
         <>
             <div className="w-72 relative">
@@ -187,7 +187,7 @@ const TrackControllers: React.FC<TrackControllersProps> = ({ track, isFavorite, 
                     onValueChange={handleSeek}
                 />
                 <button
-                    onClick={() => { likeTrack(track.id), setIsFavorite(!isFavorite) }}
+                    onClick={() => { likeTrack(track.id);setIsFavorite(!isFavorite) }}
                     className="absolute -top-9 right-0"
                     aria-label="Toggle Favorite"
                 >

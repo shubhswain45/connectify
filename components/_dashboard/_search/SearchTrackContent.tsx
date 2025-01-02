@@ -19,11 +19,20 @@ interface SearchContentProps {
   setSearchData: (data: SearchData) => void;
 }
 
+interface Track {
+  id: string;               // Unique identifier
+  title: string;            // Track title
+  artist: string;           // Name of the artist or band
+  duration: string;         // Duration of the track in seconds
+  coverImageUrl?: string;   // URL to the cover image (optional)
+  audioFileUrl: string;     // URL to the audio file
+}
+
 const SearchTrackContent: React.FC<SearchContentProps> = ({ searchQuery,searchData, setSearchData }) => {
   console.log("searchData", searchData);
 
   const [hasMore, setHasMore] = useState(true); // Tracks if there are more tracks to load
-  const [allTracks, setAllTracks] = useState<any[]>([]); // State to hold all accumulated tracks
+  const [allTracks, setAllTracks] = useState<Track[]>([]); // State to hold all accumulated tracks
   const { data, isLoading } = useSearchTrack(searchQuery, searchData.page); // Fetch 10 tracks per page
   const [theme] = useGetCurrentTheme();
   const { audioDetails, setAudioDetails } = useAudioStore();
@@ -38,14 +47,36 @@ const SearchTrackContent: React.FC<SearchContentProps> = ({ searchQuery,searchDa
     // Check if the search query is different from the previous query before updating
     if (searchData.searchQuery !== prevQuery) {
       if (data) {
-        setAllTracks(data); // Reset the tracks when the query changes
+        const tracks = data?.map((track) => {
+          return {
+            id: track?.id || "",
+            title: track?.title || "",
+            artist: track?.artist || "",
+            duration: track?.duration || "",
+            coverImageUrl: track?.coverImageUrl || undefined,
+            audioFileUrl: track?.audioFileUrl || "",   
+          }
+      })
+        setAllTracks(tracks); // Reset the tracks when the query changes
         setPrevQuery(searchData.searchQuery); // Update prevQuery only when the search query changes
       }
     } else if (data && data.length > 0) {
       // Append new data only if the query remains the same
-      if (searchData.page != 1) {
-        setAllTracks(prevTracks => [...prevTracks, ...data]);
+      if (searchData.page !== 1) {
+        const validTracks: Track[] = (data || [])
+          .filter((track): track is Track => track !== null && track !== undefined)
+          .map((track) => ({
+            id: track.id || "",           
+            title: track.title || "",           
+            artist: track.artist || "",            
+            duration: track.duration || "",          
+            coverImageUrl: track.coverImageUrl || undefined,   
+            audioFileUrl: track.audioFileUrl || "",   
+          }));
+      
+        setAllTracks((prevTracks) => [...(prevTracks || []), ...validTracks]);
       }
+      
     }
 
     // Check if the data length is less than 3 to indicate no more data
@@ -90,8 +121,8 @@ const SearchTrackContent: React.FC<SearchContentProps> = ({ searchQuery,searchDa
       </div>
     );
   }
-  
-  const handleClick = (track: any, e: React.MouseEvent<HTMLButtonElement, MouseEvent>, isPlayingCurrentSong: boolean) => {
+
+  const handleClick = (track: Track, e: React.MouseEvent<HTMLButtonElement, MouseEvent>, isPlayingCurrentSong: boolean) => {
     e.stopPropagation();
     if (isPlayingCurrentSong) {
       setAudioDetails({ isPlaying: false });
@@ -106,7 +137,7 @@ const SearchTrackContent: React.FC<SearchContentProps> = ({ searchQuery,searchDa
       coverImageUrl: track.coverImageUrl || '',
       audioFileUrl: track.audioFileUrl,
       isPlaying: true,
-      isFavorite: track.hasLiked,
+      isFavorite: false,
       repeatable: isTrackRepeatable(track.id),
       isQueued: isTrackInQueue(track.id),
     });

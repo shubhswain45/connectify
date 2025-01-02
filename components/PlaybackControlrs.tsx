@@ -247,17 +247,18 @@ export const PlaybackControls = () => {
 
   const skipForward = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = audioRef.current.currentTime + 10,
-        setCurrentTime(audioRef.current.currentTime);
+      audioRef.current.currentTime = audioRef.current.currentTime + 10;
+      setCurrentTime(audioRef.current.currentTime);
     }
   };
-
+  
   const skipBackward = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = audioRef.current.currentTime - 10,
-        setCurrentTime(audioRef.current.currentTime);
+      audioRef.current.currentTime = audioRef.current.currentTime - 10;
+      setCurrentTime(audioRef.current.currentTime);
     }
   };
+  
 
   const handleRepeat = () => {
     // Guard clause for missing track

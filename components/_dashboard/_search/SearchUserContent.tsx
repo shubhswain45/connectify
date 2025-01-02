@@ -13,9 +13,17 @@ interface SearchContentProps {
     setSearchData: (data: SearchData) => void;
 }
 
+export interface SearchUserResponse {
+    username: string; // User's username
+    fullName: string; // User's full name
+    profileImageURL?: string; // Optional profile image URL
+    totalTracks: number; // Total number of tracks
+}
+
+
 const SearchUserContent: React.FC<SearchContentProps> = ({ searchData, setSearchData }) => {
     const [hasMore, setHasMore] = useState(true);
-    const [allUsers, setAllUsers] = useState<any[]>([]);
+    const [allUsers, setAllUsers] = useState<SearchUserResponse[]>([]);
     const { data, isLoading } = useSearchUser(searchData.searchQuery, searchData.page);
     const router = useRouter();
     const [prevQuery, setPrevQuery] = useState("");
@@ -25,13 +33,25 @@ const SearchUserContent: React.FC<SearchContentProps> = ({ searchData, setSearch
 
         if (searchData.searchQuery !== prevQuery) {
             if (data) {
-                setAllUsers(data);
+                const users = data.map((user) => {
+                    return {
+                        username: user?.username || "",
+                        fullName: user?.fullName || "",
+                        profileImageURL: user?.profileImageURL || "",
+                        totalTracks: user?.totalTracks || 0
+                    }
+                })
+                setAllUsers(users);
                 setPrevQuery(searchData.searchQuery);
             }
         } else if (data && data.length > 0) {
             if (searchData.page !== 1) {
-                setAllUsers((prevUsers) => [...prevUsers, ...data]);
-            }
+                setAllUsers((prevUsers) => [
+                  ...(prevUsers || []),
+                  ...(data?.filter((user): user is SearchUserResponse => user !== null) || []),
+                ]);
+              }
+              
         }
 
         if (data && data.length < 3) {
@@ -68,24 +88,24 @@ const SearchUserContent: React.FC<SearchContentProps> = ({ searchData, setSearch
             </div>
         );
     }
-    
+
     return (
         <div className="px-4 sm:px-8 max-w-[800px] mx-auto space-y-4 mb-10">
             {allUsers?.map((user) => (
                 <div
-                    key={user?.id}
+                    key={user?.username}
                     className="p-3 rounded-md flex items-center gap-4 bg-[#1f1f1f] cursor-pointer hover:bg-[#353433] group relative"
                     onClick={() => {
                         router.push(`/dashboard/${user.username}`);
                     }}
                 >
                     {/* Profile Image with Fallback */}
-                    
-                        <img
-                            src={user?.profileImageURL || "https://toppng.com/uploads/preview/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png"}
-                            alt={user?.username}
-                            className="w-16 h-16 rounded-full object-cover"
-                        />
+
+                    <img
+                        src={user?.profileImageURL || "https://toppng.com/uploads/preview/roger-berry-avatar-placeholder-11562991561rbrfzlng6h.png"}
+                        alt={user?.username}
+                        className="w-16 h-16 rounded-full object-cover"
+                    />
 
                     {/* User Details */}
                     <div className="flex-1">
