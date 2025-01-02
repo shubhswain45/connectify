@@ -11,27 +11,20 @@ import {
   Heart,
   Laptop2,
   ListMinus,
-  ListMusic,
   ListPlus,
-  Mic2,
   Pause,
   Play,
   Repeat,
   RotateCcw,
   RotateCw,
-  Shuffle,
-  SkipBack,
-  SkipForward,
   Volume1,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useQueueStore } from "@/store/useQueueStore";
 import { useRepeatableTracksStore } from "@/store/useRepeatableTracksStore";
-import { trackSynchronousRequestDataAccessInDev } from "next/dist/server/app-render/dynamic-rendering";
 import { usePlaylistTracksStore } from "@/store/usePlaylistTracksStore";
 import Link from "next/link";
 

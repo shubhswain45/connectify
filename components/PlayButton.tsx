@@ -9,7 +9,7 @@ import { Pause, Play } from "lucide-react";
 const PlayButton = ({ track }: { track: Track }) => {
   const [theme] = useGetCurrentTheme()
   const { audioDetails, setAudioDetails } = useAudioStore();
-  const { isTrackRepeatable, markTrackAsRepeatable, unmarkTrackAsRepeatable } = useRepeatableTracksStore()
+  const { isTrackRepeatable } = useRepeatableTracksStore()
   const { isTrackInQueue } = useQueueStore()
 
   const isPlayingCurrentSong =

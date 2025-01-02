@@ -1,14 +1,8 @@
 import { useGetCurrentTheme } from '@/hooks/theme';
-import React, { useState } from 'react';
+import React from 'react';
 
 // Options for the header
 const options = ['Track', 'User', 'Playlist'];
-
-
-interface SearchData {
-    searchQuery: string;
-    page: number;
-}
 
 interface SearchHeaderProps {
     selectedOption: string;

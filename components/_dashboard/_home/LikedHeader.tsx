@@ -1,9 +1,7 @@
 "use client"
 
 import { useGetCurrentTheme } from "@/hooks/theme"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { FaPlay } from "react-icons/fa"
 
 interface ListItemProps {
     image: string
@@ -11,7 +9,7 @@ interface ListItemProps {
     href: string
 }
 
-const LikedHeader: React.FC<ListItemProps> = ({ image, name, href }) => {
+const LikedHeader: React.FC<ListItemProps> = ({ name }) => {
     const [theme] = useGetCurrentTheme()
     const router = useRouter()
 

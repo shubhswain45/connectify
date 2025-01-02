@@ -5,13 +5,11 @@ import { useLikeTrack } from '@/hooks/track';
 import { useAudioStore } from '@/store/useAudioStore';
 import { useQueueStore } from '@/store/useQueueStore';
 import { useRepeatableTracksStore } from '@/store/useRepeatableTracksStore';
-import { Heart, ListMinus, ListPlus, Pause, Play, Repeat, RotateCcw, RotateCw } from 'lucide-react';
+import { Heart, ListMinus, ListPlus } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
 import { FaHeart } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { motion } from "framer-motion";
-import { GiPauseButton } from "react-icons/gi";
-import { IoMdPlay } from "react-icons/io";
 
 interface TrackControllersProps {
     track: Track;

@@ -17,7 +17,7 @@ interface PlaylistSongsProps {
     createdBy: string;
 }
 
-function PlaylistSongs({ id, tracks, createdBy }: PlaylistSongsProps) {
+function PlaylistSongs({ tracks, createdBy }: PlaylistSongsProps) {
     const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();

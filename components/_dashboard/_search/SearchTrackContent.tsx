@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchTrack } from '@/hooks/track'; // Correct import for the custom hook
 import { FaPause, FaPlay } from 'react-icons/fa';
 import { useGetCurrentTheme } from '@/hooks/theme';
@@ -6,7 +6,7 @@ import { useAudioStore } from '@/store/useAudioStore';
 import { useRepeatableTracksStore } from '@/store/useRepeatableTracksStore';
 import { useQueueStore } from '@/store/useQueueStore';
 import { useRouter } from 'next/router';
-import { PlaylistSkeleton, SearchContentSkeleton } from '../../Skeletons';
+import { SearchContentSkeleton } from '../../Skeletons';
 
 interface SearchData {
   searchQuery: string;
@@ -120,7 +120,7 @@ const SearchTrackContent: React.FC<SearchContentProps> = ({ searchQuery,searchDa
 
   return (
     <div className="px-4 sm:px-8 max-w-[800px] mx-auto space-y-4 mb-10">
-      {allTracks?.map((track, index) => {
+      {allTracks?.map((track) => {
         const isPlayingCurrentSong =
           audioDetails.audioFileUrl === track?.audioFileUrl && audioDetails.isPlaying;
 

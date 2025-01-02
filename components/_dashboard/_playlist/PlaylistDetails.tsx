@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import PlaylistDropdown from "./PlaylistDropDown";
 
 // Define the prop types
@@ -9,9 +9,7 @@ type PlaylistDetailsProps = {
 };
 
 function PlaylistDetails({ coverImageUrl, title, createdBy }: PlaylistDetailsProps) {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuButtonRef = useRef<HTMLDivElement | null>(null); // Ref to the "More" icon
-    const menuRef = useRef<HTMLDivElement | null>(null); // Ref to the dropdown menu
 
     return (
         <div className="flex flex-col sm:flex-row gap-6 mb-8">

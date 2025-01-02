@@ -1,23 +1,16 @@
 import { useState } from "react"; // Import useState for local state
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronLeft, ChevronRight, Edit2 } from "lucide-react"; // Lucide React icon for edit
-import FeaturedSection from "@/components/FeaturedSection";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { parseCookies } from "nookies"; // Used for parsing cookies
 import { createGraphqlClient } from "@/clients/api";
 import { getUserPlaylistsQuery, getUserProfileQuery } from "@/graphql/query/user";
 import { GetUserProfileResponse, UserPlaylistsResponse } from "@/gql/graphql";
 import SectionGrid from "@/components/_dashboard/_home/SectionGrid";
-import { useFollowUser } from "@/hooks/user";
-import { useCurrentUser } from "@/hooks/auth";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 import { useRouter } from "next/router";
-import { useGetCurrentBackground, useGetCurrentTheme } from "@/hooks/theme";
 import UserHeader from "@/components/_dashboard/_user/UserHeader";
-import Topbar from "../../../../components/_dashboard/Topbar";
 import DashboardLayout from "@/layout/DashboardLayout";
 import PaginationController from "@/components/_dashboard/PaginationController";
 import UserProfileHeader from "@/components/_dashboard/_user/UserProfileHeader";
+import { useCurrentUser } from "@/hooks/auth";
 
 interface UserPageProps {
     user: GetUserProfileResponse | null;
@@ -25,7 +18,6 @@ interface UserPageProps {
 }
 
 const UserPage = ({ user, res }: UserPageProps) => {
-    const [bg] = useGetCurrentBackground()
     const { data } = useCurrentUser()
     const router = useRouter()
     const page = router.query.page ? parseInt(router.query.page as string, 10) : 1;
@@ -43,7 +35,7 @@ const UserPage = ({ user, res }: UserPageProps) => {
     }
 
     return (
-        <DashboardLayout background={bg} shouldShowFeatureHeader={false}>
+        <DashboardLayout shouldShowFeatureHeader={false}>
 
             <div className="p-4 sm:p-6">
                 <UserProfileHeader user={user} isFollowed={isFollowed} setIsFollowed={setIsFollowed} />

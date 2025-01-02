@@ -1,4 +1,3 @@
-import { MdOutlineChevronLeft } from "react-icons/md";
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { FaPlus, FaHeart, FaAngleLeft } from "react-icons/fa";
@@ -47,8 +46,6 @@ function TrackDropDown({
   const { bg, setBg } = useBackgroundStore()
 
   console.log("bg", bg);
-
-  const availableSpeeds = [0.5, 0.75, 1, 1.5, 1.75, 2];
 
   const shareTrack = () => {
     navigator.clipboard.writeText(pathname);

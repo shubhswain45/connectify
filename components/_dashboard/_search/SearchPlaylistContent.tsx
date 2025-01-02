@@ -1,12 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useSearchTrack } from '@/hooks/track'; // Correct import for the custom hook
-import { FaPause, FaPlay } from 'react-icons/fa';
-import { useGetCurrentTheme } from '@/hooks/theme';
-import { useAudioStore } from '@/store/useAudioStore';
-import { useRepeatableTracksStore } from '@/store/useRepeatableTracksStore';
-import { useQueueStore } from '@/store/useQueueStore';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { PlaylistSkeleton, SearchContentSkeleton } from '../../Skeletons';
+import { SearchContentSkeleton } from '../../Skeletons';
 import { useSearchPlaylist } from '@/hooks/playlist';
 
 interface SearchData {
@@ -25,10 +19,6 @@ const SearchPlaylistContent: React.FC<SearchContentProps> = ({ searchData, setSe
     const [hasMore, setHasMore] = useState(true); // Tracks if there are more tracks to load
     const [allPlaylists, setAllPlaylists] = useState<any[]>([]); // State to hold all accumulated tracks
     const { data, isLoading, error } = useSearchPlaylist(searchData.searchQuery, searchData.page); // Fetch 10 tracks per page
-    const [theme] = useGetCurrentTheme();
-    const { audioDetails, setAudioDetails } = useAudioStore();
-    const { isTrackRepeatable } = useRepeatableTracksStore();
-    const { isTrackInQueue } = useQueueStore();
     const router = useRouter();
     const [prevQuery, setPrevQuery] = useState("")
 
@@ -97,32 +87,9 @@ const SearchPlaylistContent: React.FC<SearchContentProps> = ({ searchData, setSe
         return <div>Error: {error.message}</div>;
     }
 
-    const handleClick = (track: any, e: React.MouseEvent<HTMLButtonElement, MouseEvent>, isPlayingCurrentSong: boolean) => {
-        e.stopPropagation();
-        if (isPlayingCurrentSong) {
-            setAudioDetails({ isPlaying: false });
-            return;
-        }
-
-        setAudioDetails({
-            id: track.id,
-            title: track.title,
-            artist: track.artist,
-            duration: track.duration,
-            coverImageUrl: track.coverImageUrl || '',
-            audioFileUrl: track.audioFileUrl,
-            isPlaying: true,
-            isFavorite: track.hasLiked,
-            repeatable: isTrackRepeatable(track.id),
-            isQueued: isTrackInQueue(track.id),
-        });
-    };
-
-
-
     return (
         <div className="px-4 sm:px-8 max-w-[800px] mx-auto space-y-4 mb-10">
-            {allPlaylists?.map((playlist, index) => {
+            {allPlaylists?.map((playlist) => {
                 return (
                     <div
                         key={playlist?.id}

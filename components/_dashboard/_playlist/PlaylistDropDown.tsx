@@ -1,6 +1,6 @@
 // PlaylistDropdown.tsx
 import { useState, useRef, useEffect } from "react";
-import { EllipsisVertical, Edit, Trash2, Share } from "lucide-react";
+import { EllipsisVertical, Trash2, Share } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCurrentUser } from "@/hooks/auth";
 

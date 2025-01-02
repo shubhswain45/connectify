@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { MoreHorizontal } from 'lucide-react';
 import { Track } from '@/gql/graphql';
-import { useBackgroundStore } from '@/store/useBackgroundStore';
 import TrackDropDown from './TrackDropDown';
 
 interface TrackDetailsProps {

@@ -1,16 +1,15 @@
 import { buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { HomeIcon, Library, LoaderPinwheel, Plus, Router } from "lucide-react";
+import { HomeIcon, Library, LoaderPinwheel, Plus } from "lucide-react";
 import Link from "next/link";
 import { PlaylistSkeleton } from "./Skeletons";
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import { useGetUserPlaylists } from "@/hooks/playlist";
 import { useCurrentUser } from "@/hooks/auth";
 import CreateTrackDialog from "./_dashboard/CreateTrackDialog";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
-import { usePlaylistTracksStore } from "@/store/usePlaylistTracksStore";
 
 const LeftSidebar = () => {
     const [songDialogOpen, setSongDialogOpen] = useState(false);
@@ -18,7 +17,6 @@ const LeftSidebar = () => {
     const { data, isLoading: isFetchingUserPlaylist } = useGetUserPlaylists(user?.getCurrentUser?.username || "");
     const pathname = usePathname()
     const router = useRouter()
-    const {setPlaylistDetails} = usePlaylistTracksStore()
 
     return (
         <div className="h-full flex flex-col gap-2 mr-1">

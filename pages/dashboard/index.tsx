@@ -8,7 +8,6 @@ import SectionGrid from "@/components/_dashboard/_home/SectionGrid";
 import PaginationController from "@/components/_dashboard/PaginationController";
 import DashboardLayout from "@/layout/DashboardLayout";
 import { useGetCurrentTheme } from "@/hooks/theme";
-import { useBackgroundStore } from "@/store/useBackgroundStore";
 import LikedHeader from "@/components/_dashboard/_home/LikedHeader";
 
 interface HomePageProps {
